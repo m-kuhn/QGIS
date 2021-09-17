@@ -342,16 +342,16 @@ QString QgsPostgresProvider::providerKey()
 void QgsPostgresProvider::setTransaction( QgsTransaction *transaction )
 {
   // static_cast since layers cannot be added to a transaction of a non-matching provider
-    mTransaction = static_cast<QgsPostgresTransaction *>( transaction );
+  mTransaction = static_cast<QgsPostgresTransaction *>( transaction );
 }
 
 struct Ewkt
 {
-    int srid = -1;
-    QString wkt;
+  int srid = -1;
+  QString wkt;
 };
 
-QgsReferencedGeometry QgsPostgresProvider::fromEwkt(const QString &ewkt, QgsPostgresConn *conn)
+QgsReferencedGeometry QgsPostgresProvider::fromEwkt( const QString &ewkt, QgsPostgresConn *conn )
 {
   thread_local const QRegularExpression regularExpressionSRID( "^SRID=(\\d+);" );
 
@@ -370,55 +370,85 @@ QgsReferencedGeometry QgsPostgresProvider::fromEwkt(const QString &ewkt, QgsPost
   return QgsReferencedGeometry( geom, sridToCoordSystem( ewktInfo.srid, conn ) );
 }
 
-QString QgsPostgresProvider::toEwkt(const QgsReferencedGeometry &geom)
+QString QgsPostgresProvider::toEwkt( const QgsReferencedGeometry &geom, QgsPostgresConn *conn )
 {
-    return QStringLiteral( "SRID=%1;%2" ).arg( QString::number( geom.crs().postgisSrid() ), geom.asWkt() );
+  return QStringLiteral( "SRID=%1;%2" ).arg( QString::number( crsToSrid( geom.crs(), conn ) ), geom.asWkt() );
 }
 
-QString QgsPostgresProvider::geomAttrToString(const QVariant &attr)
+QString QgsPostgresProvider::geomAttrToString( const QVariant &attr, QgsPostgresConn *conn )
 {
-    if ( attr.type() == QVariant::String )
-        return attr.toString();
-    else
-        return toEwkt( attr.value<QgsReferencedGeometry>() );
+  if ( attr.type() == QVariant::String )
+    return attr.toString();
+  else
+    return toEwkt( attr.value<QgsReferencedGeometry>(), conn );
 }
 
-QgsCoordinateReferenceSystem QgsPostgresProvider::sridToCoordSystem(int srid, QgsPostgresConn *conn)
+static QMutex sMutex;
+static QMap<int, QgsCoordinateReferenceSystem> sCrsCache;
+
+int QgsPostgresProvider::crsToSrid( const QgsCoordinateReferenceSystem &crs, QgsPostgresConn *conn )
 {
-    QgsCoordinateReferenceSystem crs;
+  QMutexLocker locker( &sMutex );
+  int srid = sCrsCache.key( crs );
 
-    static QMutex sMutex;
+  if ( srid > -1 )
+    return srid;
+  else
+  {
+    if ( conn )
+    {
+      QStringList authParts = crs.authid().split( ':' );
+      if ( authParts.size() != 2 )
+        return -1;
+      const QString authName = authParts.first();
+      const QString authId = authParts.last();
+      QgsPostgresResult result( conn->PQexec( QStringLiteral( "SELECT srid FROM spatial_ref_sys WHERE auth_name='%1' AND auth_srid=%2" ).arg( authName, authId ) ) );
 
-      QMutexLocker locker( &sMutex );
-      static QMap<int, QgsCoordinateReferenceSystem> sCrsCache;
-      if ( sCrsCache.contains( srid ) )
-        crs = sCrsCache.value( srid );
-      else
+      if ( result.PQresultStatus() == PGRES_TUPLES_OK )
       {
-        if ( conn )
-        {
-          QgsPostgresResult result( conn->PQexec( QStringLiteral( "SELECT auth_name, auth_srid, srtext, proj4text FROM spatial_ref_sys WHERE srid=%1" ).arg( srid ) ) );
-          if ( result.PQresultStatus() == PGRES_TUPLES_OK )
-          {
-            const QString authName = result.PQgetvalue( 0, 0 );
-            const QString authSRID = result.PQgetvalue( 0, 1 );
-            const QString srText = result.PQgetvalue( 0, 2 );
-            bool ok = false;
-            if ( authName == QLatin1String( "EPSG" ) || authName == QLatin1String( "ESRI" ) )
-            {
-              ok = crs.createFromUserInput( authName + ':' + authSRID );
-            }
-            if ( !ok && !srText.isEmpty() )
-            {
-              ok = crs.createFromUserInput( srText );
-            }
-            if ( !ok )
-              crs = QgsCoordinateReferenceSystem::fromProj( result.PQgetvalue( 0, 3 ) );
-            sCrsCache.insert( srid, crs );
-          }
-        }
+        int srid = result.PQgetvalue( 0, 0 ).toInt();
+        sCrsCache.insert( srid, crs );
+        return srid;
       }
-    return crs;
+    }
+  }
+
+  return -1;
+}
+
+QgsCoordinateReferenceSystem QgsPostgresProvider::sridToCoordSystem( int srid, QgsPostgresConn *conn )
+{
+  QgsCoordinateReferenceSystem crs;
+
+  QMutexLocker locker( &sMutex );
+  if ( sCrsCache.contains( srid ) )
+    crs = sCrsCache.value( srid );
+  else
+  {
+    if ( conn )
+    {
+      QgsPostgresResult result( conn->PQexec( QStringLiteral( "SELECT auth_name, auth_srid, srtext, proj4text FROM spatial_ref_sys WHERE srid=%1" ).arg( srid ) ) );
+      if ( result.PQresultStatus() == PGRES_TUPLES_OK )
+      {
+        const QString authName = result.PQgetvalue( 0, 0 );
+        const QString authSRID = result.PQgetvalue( 0, 1 );
+        const QString srText = result.PQgetvalue( 0, 2 );
+        bool ok = false;
+        if ( authName == QLatin1String( "EPSG" ) || authName == QLatin1String( "ESRI" ) )
+        {
+          ok = crs.createFromUserInput( authName + ':' + authSRID );
+        }
+        if ( !ok && !srText.isEmpty() )
+        {
+          ok = crs.createFromUserInput( srText );
+        }
+        if ( !ok )
+          crs = QgsCoordinateReferenceSystem::fromProj( result.PQgetvalue( 0, 3 ) );
+        sCrsCache.insert( srid, crs );
+      }
+    }
+  }
+  return crs;
 }
 
 void QgsPostgresProvider::disconnectDb()
@@ -2519,7 +2549,7 @@ bool QgsPostgresProvider::addFeatures( QgsFeatureList &flist, Flags flags )
         }
         else if ( fieldTypeName == QLatin1String( "geometry" ) )
         {
-          QString val = geomAttrToString( v );
+          QString val = geomAttrToString( v, connectionRO() );
           values += QStringLiteral( "%1%2(%3)" )
                     .arg( delim,
                           connectionRO()->majorVersion() < 2 ? "geomfromewkt" : "st_geomfromewkt",
@@ -3121,7 +3151,7 @@ bool QgsPostgresProvider::changeAttributeValues( const QgsChangedAttributesMap &
 
           if ( fld.typeName() == QLatin1String( "geometry" ) )
           {
-              QString val = geomAttrToString( siter.value() );
+            QString val = geomAttrToString( siter.value(), connectionRO() );
 
             sql += QStringLiteral( "%1(%2)" )
                    .arg( connectionRO()->majorVersion() < 2 ? "geomfromewkt" : "st_geomfromewkt",
@@ -3487,7 +3517,7 @@ bool QgsPostgresProvider::changeFeatures( const QgsChangedAttributesMap &attr_ma
 
           if ( fld.typeName() == QLatin1String( "geometry" ) )
           {
-              QString val = geomAttrToString( siter.value() ) ;
+            QString val = geomAttrToString( siter.value(), connectionRO() ) ;
             sql += QStringLiteral( "%1(%2)" )
                    .arg( connectionRO()->majorVersion() < 2 ? "geomfromewkt" : "st_geomfromewkt",
                          quotedValue( val ) );
@@ -4957,7 +4987,7 @@ QVariant QgsPostgresProvider::parseArray( const QString &txt, QVariant::Type typ
 
 QVariant QgsPostgresProvider::convertValue( QVariant::Type type, QVariant::Type subType, const QString &value, const QString &typeName ) const
 {
-    return convertValue( type, subType, value, typeName, connectionRO() );
+  return convertValue( type, subType, value, typeName, connectionRO() );
 }
 
 QVariant QgsPostgresProvider::convertValue( QVariant::Type type, QVariant::Type subType, const QString &value, const QString &typeName, QgsPostgresConn *conn )
@@ -4983,7 +5013,7 @@ QVariant QgsPostgresProvider::convertValue( QVariant::Type type, QVariant::Type 
       else
         result = QVariant( type );
       break;
-  case QVariant::UserType:
+    case QVariant::UserType:
       result = fromEwkt( value, conn );
       break;
 
