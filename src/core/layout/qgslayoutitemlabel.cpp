@@ -189,16 +189,17 @@ void QgsLayoutItemLabel::contentChanged()
       //set this to true after html is loaded.
       mHtmlLoaded = false;
 
-      const QUrl baseUrl = QUrl::fromLocalFile( mLayout->project()->absoluteFilePath() );
-      mWebPage->mainFrame()->setHtml( textToDraw, baseUrl );
+      QTemporaryFile *tempFile = new QTemporaryFile( this );
+      tempFile->setFileTemplate( QStringLiteral( "qgis_layout_html_XXXXXX.html") );
+      tempFile->open();
+      tempFile->write(textToDraw.toUtf8());
+      tempFile->close();
 
-      //For very basic html labels with no external assets, the html load will already be
-      //complete before we even get a chance to start the QEventLoop. Make sure we check
-      //this before starting the loop
+      mWebPage->mainFrame()->load( QUrl( QStringLiteral( "file://" ) + tempFile->fileName() ) );
 
       // important -- we CAN'T do this when it's a render inside the designer, otherwise the
       // event loop will mess with the paint event and cause it to be deleted, and BOOM!
-      if ( !mHtmlLoaded && ( !mLayout || !mLayout->renderContext().isPreviewRender() ) )
+      if ( !mLayout || !mLayout->renderContext().isPreviewRender() )
       {
         //Setup event loop and timeout for rendering html
         QEventLoop loop;
