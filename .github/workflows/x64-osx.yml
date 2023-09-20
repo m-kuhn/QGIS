@@ -3,7 +3,7 @@ name: 🍎 MacOS
 on:
   push:
     branches:
-      - master
+      - vcpkg
       - release-**
   pull_request:
   release:
