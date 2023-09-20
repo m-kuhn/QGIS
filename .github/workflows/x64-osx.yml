@@ -1,0 +1,58 @@
+---
+name: 🍎 MacOS
+on:
+  push:
+    branches:
+      - master
+      - release-**
+  pull_request:
+  release:
+    types: ['published']
+
+
+jobs:
+  build:
+    name: build (macos)
+    runs-on: macos-12
+
+    steps:
+      - name: 🐣 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🐩 Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: 🔨 Prepare build env
+        run: |
+          brew install automake bison flex gnu-sed create-dmg autoconf-archive
+          echo $(brew --prefix bison)/bin >> $GITHUB_PATH
+          echo $(brew --prefix flex)/bin >> $GITHUB_PATH
+
+      - name: ⚒ Setup XCode
+        uses: maxim-lobanov/setup-xcode@v1.5.1
+        with:
+          xcode-version: latest-stable
+
+      - name: 🌱 Install dependencies and generate project files
+        run: |
+          cmake -S "${{ github.workspace }}" \
+                -B "/Users/runner/build" \
+                -G Xcode \
+                -D WITH_VCPKG=ON \
+                -D VCPKG_TARGET_TRIPLET=x64-osx-dynamic \
+                -D VCPKG_MANIFEST_FEATURES=process,gui,desktop \
+                -D NUGET_USERNAME=m-kuhn \
+                -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🌋 Build
+        run: |
+          cmake --build "/Users/runner/build"
+      - name: 📦 Package
+        run: |
+          cmake --build  "${{ env.CMAKE_BUILD_DIR }}" --target bundle --config ${{ env.BUILD_TYPE }}
+
+      - name: 📦 Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: "QField-dev-x64-osx-experimental-qt6"
+          path: ${{ env.CMAKE_BUILD_DIR }}/QField-Installer.dmg
