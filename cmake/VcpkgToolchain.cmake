@@ -1,4 +1,4 @@
-set(NUGET_SOURCE "https://nuget.pkg.github.com/opengisch/index.json")
+set(NUGET_SOURCE "https://nuget.pkg.github.com/m-kuhn/index.json")
 set(NUGET_USERNAME "" CACHE STRING "Nuget user")
 set(NUGET_TOKEN "" CACHE STRING "Nuget token")
 
@@ -86,7 +86,7 @@ if(NOT "${NUGET_TOKEN}" STREQUAL "" AND (_HOST_IS_WINDOWS OR EXISTS "${_VCPKG_MO
     "${_CONFIG_PATH}"
     @ONLY)
   execute_process(
-    COMMAND ${_NUGET_EXE} setapikey "${NUGET_TOKEN}" -src "https://nuget.pkg.github.com/opengisch/index.json" -configfile ${_CONFIG_PATH}
+    COMMAND ${_NUGET_EXE} setapikey "${NUGET_TOKEN}" -src "https://nuget.pkg.github.com/m-kuhn/index.json" -configfile ${_CONFIG_PATH}
     OUTPUT_VARIABLE _OUTPUT
     ERROR_VARIABLE _ERROR
     RESULT_VARIABLE _RESULT)
