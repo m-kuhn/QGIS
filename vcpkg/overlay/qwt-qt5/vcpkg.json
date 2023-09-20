@@ -14,7 +14,8 @@
     {
       "name": "vcpkg-qmake",
       "host": true,
-      "default-features": false
+      "default-features": false,
+      "features": ["qt5"]
     }
   ]
 }
