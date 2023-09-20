@@ -13,6 +13,7 @@
     "expat",
     {
       "name": "gdal",
+      "default-features": false,
       "features": [
         "poppler"
       ]
@@ -20,6 +21,7 @@
     "geos",
     "gsl",
     "libpq",
+    "pdal",
     "libspatialindex",
     "libspatialite",
     {
