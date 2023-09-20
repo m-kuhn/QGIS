@@ -1,6 +1,7 @@
 #############################################################
 # CMake settings
 cmake_minimum_required(VERSION 3.12.0)
+set(VCPKG_TAG 095ee8757ec933b22d445738d2dbb1ce89bb8021)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_AUTORCC ON)
 # set path to additional CMake modules
@@ -26,6 +27,7 @@ set(CPACK_PACKAGE_VERSION_MINOR "35")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(COMPLETE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 set(RELEASE_NAME "Master")
+include(VcpkgToolchain)
 project(qgis VERSION ${COMPLETE_VERSION})
 
 if (APPLE)
