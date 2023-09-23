@@ -40,6 +40,7 @@ jobs:
                 -G Xcode \
                 -D WITH_VCPKG=ON \
                 -D VCPKG_TARGET_TRIPLET=x64-osx-dynamic \
+                -D WITH_QTWEBKIT=OFF \
                 -D VCPKG_MANIFEST_FEATURES="process,gui,desktop" \
                 -D NUGET_USERNAME=m-kuhn \
                 -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }}
