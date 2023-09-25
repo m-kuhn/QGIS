@@ -43,24 +43,26 @@ if (WITH_GUI)
     QT5_WRAP_UI(AFS_UIS_H ${AFS_UIS})
   endif()
   
-  add_library(provider_arcgisfeatureserver_gui_a STATIC ${AFS_GUI_SRCS} ${AFS_UIS_H})
+  if (FORCE_STATIC_LIBS)
+    add_library(provider_arcgisfeatureserver_gui_a STATIC ${AFS_GUI_SRCS} ${AFS_UIS_H})
 
-  # require c++17
-  target_compile_features(provider_arcgisfeatureserver_gui_a PRIVATE cxx_std_17)
-  
-  target_link_libraries(provider_arcgisfeatureserver_a
-    qgis_gui
-  )
-  target_link_libraries(provider_arcgisfeatureserver_gui_a
-    qgis_gui
-  )
+    # require c++17
+    target_compile_features(provider_arcgisfeatureserver_gui_a PRIVATE cxx_std_17)
+    
+    target_link_libraries(provider_arcgisfeatureserver_a
+      qgis_gui
+    )
+    target_link_libraries(provider_arcgisfeatureserver_gui_a
+      qgis_gui
+    )
 
-  include_directories(SYSTEM
-    ${CMAKE_BINARY_DIR}/src/ui
-    ${QSCINTILLA_INCLUDE_DIR}
-  )
+    include_directories(SYSTEM
+      ${CMAKE_BINARY_DIR}/src/ui
+      ${QSCINTILLA_INCLUDE_DIR}
+    )
 
-  add_dependencies(provider_arcgisfeatureserver_gui_a ui)
+    add_dependencies(provider_arcgisfeatureserver_gui_a ui)
+  endif()
 endif()
 
 if (FORCE_STATIC_LIBS)
@@ -99,21 +101,21 @@ set (AMS_SRCS
   qgsamsprovider.cpp
 )
 
-add_library (provider_arcgismapserver_a STATIC ${AMS_SRCS})
-
-target_include_directories(provider_arcgismapserver_a PUBLIC
-  ${CMAKE_SOURCE_DIR}/src/providers/arcgisrest
-)
-
-# require c++17
-target_compile_features(provider_arcgismapserver_a PRIVATE cxx_std_17)
-
-target_link_libraries (provider_arcgismapserver_a
-  qgis_core
-  ${QCA_LIBRARY}
-)
-
 if (FORCE_STATIC_LIBS)
+  add_library (provider_arcgismapserver_a STATIC ${AMS_SRCS})
+  
+  target_include_directories(provider_arcgismapserver_a PUBLIC
+    ${CMAKE_SOURCE_DIR}/src/providers/arcgisrest
+  )
+  
+  # require c++17
+  target_compile_features(provider_arcgismapserver_a PRIVATE cxx_std_17)
+  
+  target_link_libraries (provider_arcgismapserver_a
+    qgis_core
+    ${QCA_LIBRARY}
+  )
+
   # for (external) mobile apps to be able to pick up provider for linking
   install (TARGETS provider_arcgismapserver_a ARCHIVE DESTINATION ${QGIS_PLUGIN_DIR})
 else()
