@@ -59,3 +59,7 @@ jobs:
         with:
           name: "QField-dev-x64-osx-experimental-qt6"
           path: ${{ env.CMAKE_BUILD_DIR }}/QField-Installer.dmg
+
+      - name: tmate
+        if: failure()
+        uses: m-kuhn/action-tmate@patch-1
