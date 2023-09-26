@@ -33,6 +33,10 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Hacks
+        run: |
+          install_name_tool -add_rpath @executable_path/../../lib /Users/runner/build/vcpkg_installed/x64-osx-dynamic/tools/pdal/pdal
+
       - name: 🌱 Install dependencies and generate project files
         run: |
           cmake -S "${{ github.workspace }}" \
