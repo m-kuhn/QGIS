@@ -40,6 +40,7 @@ jobs:
                 -G Xcode \
                 -D WITH_VCPKG=ON \
                 -D VCPKG_TARGET_TRIPLET=x64-osx-dynamic \
+                -D VCPKG_HOST_TRIPLET=x64-osx-dynamic \
                 -D WITH_QTWEBKIT=OFF \
                 -D WITH_3D=OFF \
                 -D WITH_BINDINGS=OFF \
