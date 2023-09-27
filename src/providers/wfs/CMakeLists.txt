@@ -52,6 +52,19 @@ if (WITH_GUI)
   set(WFS_UIS ${CMAKE_SOURCE_DIR}/src/ui/qgswfssourceselectbase.ui)
 endif()
 
+if (WITH_GUI)
+  if (BUILD_WITH_QT6)
+    QT6_WRAP_UI(WFS_UIS_H ${WFS_UIS})
+  else()
+    QT5_WRAP_UI(WFS_UIS_H ${WFS_UIS})
+  endif()
+
+  include_directories(SYSTEM
+    ${QSCINTILLA_INCLUDE_DIR}
+    ${CMAKE_BINARY_DIR}/src/ui
+  )
+endif()
+
 ########################################################
 # Static
 if (FORCE_STATIC_LIBS)
@@ -72,12 +85,6 @@ if (FORCE_STATIC_LIBS)
   target_compile_definitions(provider_wfs_a PRIVATE "-DQT_NO_FOREACH")
   
   if (WITH_GUI)
-    if (BUILD_WITH_QT6)
-      QT6_WRAP_UI(WFS_UIS_H ${WFS_UIS})
-    else()
-      QT5_WRAP_UI(WFS_UIS_H ${WFS_UIS})
-    endif()
-  
     add_library(provider_wfs_gui_a STATIC ${WFS_GUI_SRCS} ${WFS_UIS_H})
   
     target_include_directories(provider_wfs_gui_a PUBLIC
@@ -99,10 +106,6 @@ if (FORCE_STATIC_LIBS)
   
     add_dependencies(provider_wfs_gui_a ui)
   
-    include_directories(SYSTEM
-      ${QSCINTILLA_INCLUDE_DIR}
-      ${CMAKE_BINARY_DIR}/src/ui
-    )
   endif()
 
   # for (external) mobile apps to be able to pick up provider for linking
