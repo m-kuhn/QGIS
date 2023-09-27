@@ -22,6 +22,13 @@ if (WITH_GUI)
   set(WMS_UIS ${CMAKE_SOURCE_DIR}/src/ui/qgswmstsettingswidgetbase.ui)
 endif()
 
+if (WITH_GUI)
+  if (BUILD_WITH_QT6)
+    QT6_WRAP_UI(WMS_UIS_H ${WMS_UIS})
+  else()
+    QT5_WRAP_UI(WMS_UIS_H ${WMS_UIS})
+  endif()
+endif()
 # static library
 if (FORCE_STATIC_LIBS)
   add_library(provider_wms_a STATIC ${WMS_SRCS})
@@ -33,13 +40,13 @@ if (FORCE_STATIC_LIBS)
   # require c++17
   target_compile_features(provider_wms_a PRIVATE cxx_std_17)
   
-  if (WITH_GUI)
-    if (BUILD_WITH_QT6)
-      QT6_WRAP_UI(WMS_UIS_H ${WMS_UIS})
-    else()
-      QT5_WRAP_UI(WMS_UIS_H ${WMS_UIS})
-    endif()
+  target_link_libraries(provider_wms_a
+    qgis_core
+  )
+  target_compile_definitions(provider_wms_a PRIVATE "-DQT_NO_FOREACH")
+  install (TARGETS provider_wms_a ARCHIVE DESTINATION ${QGIS_PLUGIN_DIR})
   
+  if (WITH_GUI)
     add_library(provider_wms_gui_a STATIC ${WMS_GUI_SRCS} ${WMS_UIS_H})
   
     target_include_directories (provider_wms_gui_a PUBLIC
@@ -51,24 +58,12 @@ if (FORCE_STATIC_LIBS)
   
     add_dependencies(provider_wms_a ui)
     add_dependencies(provider_wms_gui_a ui)
-  endif()
-  
-  target_link_libraries(provider_wms_a
-    qgis_core
-  )
-  target_compile_definitions(provider_wms_a PRIVATE "-DQT_NO_FOREACH")
-  
-  if (WITH_GUI)
+
     target_link_libraries(provider_wms_gui_a
       qgis_gui
       provider_wms_a
     )
     target_compile_definitions(provider_wms_gui_a PRIVATE "-DQT_NO_FOREACH")
-  endif()
-
-  # for (external) mobile apps to be able to pick up provider for linking
-  install (TARGETS provider_wms_a ARCHIVE DESTINATION ${QGIS_PLUGIN_DIR})
-  if (WITH_GUI)
     install (TARGETS provider_wms_gui_a ARCHIVE DESTINATION ${QGIS_PLUGIN_DIR})
   endif()
 else()
