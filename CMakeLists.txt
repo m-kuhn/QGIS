@@ -43,21 +43,6 @@ message(STATUS "QGIS version: ${COMPLETE_VERSION} ${RELEASE_NAME} (${QGIS_VERSIO
 set (ENABLE_LOCAL_BUILD_SHORTCUTS FALSE CACHE BOOL "Disables some build steps which are only relevant for releases to speed up compilation time for development")
 
 #############################################################
-if (APPLE)
-  # QGIS custom dependencies package from qgis/QGIS-Mac-Packager
-  # they can be downloaded from https://qgis.org/downloads/macos/qgis-deps
-  # and extracted to /opt/QGIS/qgis-deps-<deps-version>/stage
-  set (QGIS_MAC_DEPS_DIR "" CACHE PATH "Path to QGIS Mac custom dependencies directory")
-
-  # Setup LIB_DIR and CMAKE_PREFIX_PATH to help CMake's
-  # find_packages to look for these libraries instead of system libraries
-  if ( QGIS_MAC_DEPS_DIR )
-    set(ENV{LIB_DIR} ${QGIS_MAC_DEPS_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${QGIS_MAC_DEPS_DIR})
-  endif()
-endif()
-
-#############################################################
 # Configure OpenCL if available
 set(HAVE_OPENCL FALSE)
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "BSD$")
@@ -1163,22 +1148,6 @@ if (WITH_CORE)
 
   if (WITH_BINDINGS)
     add_subdirectory(python)
-  endif()
-
-  if (APPLE)
-    # must be last for install, so install_name_tool can do its work
-    add_subdirectory(mac)
-
-    # allow QGIS to be run directly from build directory and to run unit tests
-    execute_process(COMMAND /bin/mkdir -p "${QGIS_OUTPUT_DIRECTORY}/lib")
-    execute_process(
-      COMMAND /bin/ln -fs ../../Plugins/qgis/qgisgrass6.framework lib/
-      WORKING_DIRECTORY "${QGIS_OUTPUT_DIRECTORY}"
-    )
-    execute_process(
-      COMMAND /bin/ln -fs ../../Plugins/qgis/qgisgrass7.framework lib/
-      WORKING_DIRECTORY "${QGIS_OUTPUT_DIRECTORY}"
-    )
   endif()
 
   # manual page - makes sense only on unix systems
