@@ -37,7 +37,7 @@ jobs:
         run: |
           cmake -S "${{ github.workspace }}" \
                 -B "/Users/runner/build" \
-                -G Xcode \
+                -G Ninja \
                 -D CMAKE_BUILD_TYPE=Release \
                 -D CMAKE_INSTALL_PREFIX:PATH=/Users/runner/build/vcpkg_installed/x64-osx-dynamic \
                 -D WITH_VCPKG=ON \
