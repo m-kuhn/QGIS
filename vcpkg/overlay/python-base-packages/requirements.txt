@@ -1,0 +1,4 @@
+setuptools
+sip==6.7.12
+pyqt-builder
+PyQt5-sip==12.13.0
