@@ -1,0 +1,16 @@
+{
+  "name": "pyqt5",
+  "version": "5.15.9",
+  "port-version": 0,
+  "description": "",
+  "homepage": "riverbank",
+  "dependencies": [
+    "python3",
+    "python-base-packages",
+    "qt5-tools",
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
+    }
+  ]
+}
