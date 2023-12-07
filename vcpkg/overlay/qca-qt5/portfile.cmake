@@ -47,7 +47,7 @@ vcpkg_execute_required_process(
 )
 message(STATUS "Importing certstore done")
 
-set(PLUGINS gnupg logger softstore wincrypto)
+set(PLUGINS gnupg logger softstore wincrypto ossl)
 if("botan" IN_LIST FEATURES)
     list(APPEND PLUGINS botan)
 endif()
@@ -87,6 +87,7 @@ file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/debug/include"
     "${CURRENT_PACKAGES_DIR}/debug/share"
 )
+
 
 vcpkg_fixup_pkgconfig()
 
