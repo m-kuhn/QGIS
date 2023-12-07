@@ -47,7 +47,7 @@ jobs:
                 -D WITH_3D=OFF \
                 -D WITH_BINDINGS=OFF \
                 -D ENABLE_TESTS=OFF \
-                -D VCPKG_MANIFEST_FEATURES="process;gui;desktop" \
+                -D VCPKG_MANIFEST_FEATURES="process;gui;desktop;bindings" \
                 -D NUGET_USERNAME=m-kuhn \
                 -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
