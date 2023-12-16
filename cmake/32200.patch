@@ -377,13 +377,13 @@ index 000000000000..46510168cfe5
 +
 +      # Iterate over the filtered dependencies and fix their install names
 +      foreach(dep_install_name IN LISTS dep_install_names)
-+        string(REGEX MATCH "[^/]+(.dylib|.so)" dep_install_name "${dep_install_name}")
++        string(REGEX MATCH "[^/]+(.dylib|.so)" dep_install_short_name "${dep_install_name}")
 +        message(DEBUG "dep_install_name: ${dep_install_name}")
 +                
 +        if(type EQUAL 2)
-+          file(GLOB_RECURSE dep_files LIST_DIRECTORIES FALSE "${CURRENT_PACKAGES_DIR}/lib/${dep_install_name}")
++          file(GLOB_RECURSE dep_files LIST_DIRECTORIES FALSE "${CURRENT_PACKAGES_DIR}/lib/${dep_install_short_name}")
 +        else()
-+          file(GLOB_RECURSE dep_files LIST_DIRECTORIES FALSE "${folder}/${dep_install_name}")
++          file(GLOB_RECURSE dep_files LIST_DIRECTORIES FALSE "${folder}/${dep_install_short_name}")
 +        endif()
 +
 +        if(NOT dep_files)
