@@ -19,7 +19,6 @@
       "host": true,
       "default-features": false,
       "features": ["qt5"]
-    },
-    "pyqt5"
+    }
   ]
 }
