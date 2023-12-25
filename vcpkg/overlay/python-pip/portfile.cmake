@@ -5,11 +5,13 @@ execute_process(
 	COMMAND mkdir -p "${WORKING_DIR}/"
 )
 
-message(STATUS "Running pip install...")
-# TODO: this is a bad idea as it installs directly into the install directory
 message(STATUS "Bootstrap pip...")
 vcpkg_execute_required_process(
-	COMMAND "${PYTHON3}" "-m" "ensurepip" "--root" "${CURRENT_PACKAGES_DIR}/lib/python3.11/site-packages"
+	COMMAND "${PYTHON3}" "-m" "ensurepip" "--root" "${WORKING_DIR}/root"
 	WORKING_DIRECTORY "${WORKING_DIR}"
         LOGNAME "ensurepip-${TARGET_TRIPLET}"
 )
+
+# ensurepip will always append the installed dir to the root, that's not exactly what we want
+file(RENAME "${WORKING_DIR}${CURRENT_INSTALLED_DIR}/bin" "${CURRENT_PACKAGES_DIR}")
+file(RENAME "${WORKING_DIR}${CURRENT_INSTALLED_DIR}/lib" "${CURRENT_PACKAGES_DIR}")
