@@ -13,5 +13,5 @@ vcpkg_execute_required_process(
 )
 
 # ensurepip will always append the installed dir to the root, that's not exactly what we want
-file(RENAME "${WORKING_DIR}${CURRENT_INSTALLED_DIR}/bin" "${CURRENT_PACKAGES_DIR}")
-file(RENAME "${WORKING_DIR}${CURRENT_INSTALLED_DIR}/lib" "${CURRENT_PACKAGES_DIR}")
+file(RENAME "${WORKING_DIR}root${CURRENT_INSTALLED_DIR}/bin" "${CURRENT_PACKAGES_DIR}/bin")
+file(RENAME "${WORKING_DIR}root${CURRENT_INSTALLED_DIR}/lib" "${CURRENT_PACKAGES_DIR}/lib")
