@@ -47,4 +47,11 @@ vcpkg_execute_required_process(
         LOGNAME "install-${TARGET_TRIPLET}"
     )
 
+execute_process(
+    COMMAND mkdir -p "${CURRENT_PACKAGES_DIR}/tools"
+)
+foreach(TOOL sip-build sip-distinfo sip-install sip-module sip-sdist sip-wheel)
+    file(RENAME "${CURRENT_PACKAGES_DIR}/bin/${TOOL}" "${CURRENT_PACKAGES_DIR}/tools/${TOOL}")
+endforeach()
+
 file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
