@@ -46,4 +46,5 @@ vcpkg_execute_required_process(
         LOGNAME "install-${TARGET_TRIPLET}"
     )
 
-file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
+# https://github.com/dabeaz/ply/issues/296
+vcpkg_install_copyright(FILE_LIST "${CURRENT_PORT_DIR}/copyright")
