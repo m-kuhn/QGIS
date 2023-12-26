@@ -63,8 +63,7 @@
       "description": "Determines whether Python bindings should be built",
       "dependencies": [
         "python3",
-        "pyqt5",
-        "python3-qscintilla-qt5"
+        "py3-pyqt5"
       ]
     },
     "customwidgets": {

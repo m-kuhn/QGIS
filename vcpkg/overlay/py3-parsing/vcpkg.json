@@ -1,0 +1,10 @@
+{
+  "name": "py3-parsing",
+  "version": "3.1.1",
+  "description": "Object-oriented approach to text processing",
+  "homepage": "https://github.com/pyparsing/pyparsing",
+  "dependencies": [
+    "python3",
+    "vcpkg-get-python-packages"
+  ]
+}

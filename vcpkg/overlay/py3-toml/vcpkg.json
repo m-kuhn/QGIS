@@ -1,0 +1,9 @@
+{
+  "name": "py3-toml",
+  "version": "0.10.2",
+  "description": "Python3 library for TOML",
+  "homepage": "https://github.com/uiri/toml",
+  "dependencies": [
+    "python3"
+  ]
+}

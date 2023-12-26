@@ -1,0 +1,11 @@
+{
+  "name": "py3-packaging",
+  "version": "23.2",
+  "description": "Core utilities for Python3 packages",
+  "homepage": "https://pypi.org/project/packaging",
+  "dependencies": [
+    "python3",
+    "py3-parsing",
+    "vcpkg-get-python-packages"
+  ]
+}
