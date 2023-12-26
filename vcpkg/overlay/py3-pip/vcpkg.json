@@ -1,0 +1,10 @@
+{
+  "name": "py3-pip",
+  "version": "23.3.2",
+  "description": "Tool for installing and managing Python packages",
+  "homepage": "https://pypi.org/project/setuptools",
+  "dependencies": [
+    "python3",
+    "py3-setuptools"
+  ]
+}

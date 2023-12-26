@@ -1,0 +1,11 @@
+{
+  "name": "py3-setuptools",
+  "version": "68.2.2",
+  "description": "Collection of enhancements to the Python3 distutils",
+  "homepage": "https://pypi.org/project/setuptools",
+  "dependencies": [
+    "python3",
+    "py3-packaging",
+    "vcpkg-get-python-packages"
+  ]
+}
