@@ -1,0 +1,14 @@
+{
+  "name": "py3-sip",
+  "version": "6.7.12",
+  "description": "A tool that makes it easy to create Python bindings for C and C++ libraries",
+  "homepage": "https://www.riverbankcomputing.com/software/sip",
+  "dependencies": [
+    "python3",
+    "py3-packaging",
+    "py3-ply",
+    "py3-setuptools",
+    "py3-toml",
+    "vcpkg-get-python-packages"
+  ]
+}

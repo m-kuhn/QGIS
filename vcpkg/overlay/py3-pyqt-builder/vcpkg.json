@@ -1,0 +1,10 @@
+{
+  "name": "py3-pyqt-builder",
+  "version": "1.15.4",
+  "description": "PyQt-builder is the PEP 517 compliant build system for PyQt and projects that extend PyQt. It extends the SIP build system and uses Qt’s qmake to perform the actual compilation and installation of extension modules.",
+  "homepage": "https://www.riverbankcomputing.com/software/pyqt-builder",
+  "dependencies": [
+    "python3",
+    "vcpkg-get-python-packages"
+  ]
+}
