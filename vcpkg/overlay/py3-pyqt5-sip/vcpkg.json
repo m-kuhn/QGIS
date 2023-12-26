@@ -1,0 +1,10 @@
+{
+  "name": "py3-pyqt5-sip",
+  "version": "12.13.0",
+  "description": "The sip extension module provides support for the PyQt5 package.",
+  "homepage": "https://www.riverbankcomputing.com/software/sip",
+  "dependencies": [
+    "python3",
+    "vcpkg-get-python-packages"
+  ]
+}

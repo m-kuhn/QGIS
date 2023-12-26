@@ -1,9 +1,0 @@
-{
-  "name": "python-pip",
-  "version": "2023-12-03",
-  "description": "",
-  "homepage": "python",
-  "dependencies": [
-    "python3"
-  ]
-}

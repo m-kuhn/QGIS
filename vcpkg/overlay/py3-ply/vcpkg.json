@@ -1,0 +1,10 @@
+{
+  "name": "py3-ply",
+  "version": "3.11",
+  "description": "Python Lex & Yacc",
+  "homepage": "https://www.dabeaz.com/ply/",
+  "dependencies": [
+    "python3",
+    "vcpkg-get-python-packages"
+  ]
+}
