@@ -82,8 +82,8 @@ set(MAKEFILE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel-make/Makefile")
 
 vcpkg_list(SET make_opts)
 vcpkg_list(SET install_opts)
+set(path_backup "$ENV{PATH}")
 if (CMAKE_HOST_WIN32)
-    set(path_backup "$ENV{PATH}")
     vcpkg_add_to_path(PREPEND "${SCRIPTS}/buildsystems/make_wrapper")
     if(NOT DEFINED Z_VCPKG_MAKE)
         vcpkg_acquire_msys(MSYS_ROOT)
@@ -106,6 +106,9 @@ else()
     set(make_command "${Z_VCPKG_MAKE}")
     vcpkg_list(SET make_opts V=1 -j ${VCPKG_CONCURRENCY} -f ${MAKEFILE})
     vcpkg_list(SET install_opts -j ${VCPKG_CONCURRENCY} -f ${MAKEFILE} DESTDIR=${CURRENT_PACKAGES_DIR}/lib/python3.11/site-packages)
+
+    # To find sip-distinfo during install
+    set(ENV{PATH} "${CURRENT_INSTALLED_DIR}/tools:$ENV{PATH}")
 endif()
 
 vcpkg_list(SET make_cmd_line ${make_command} ${make_opts})
@@ -125,5 +128,6 @@ vcpkg_execute_build_process(
 	#        NO_PARALLEL_COMMAND ${no_parallel_make_cmd_line}
         WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel-make"
         LOGNAME "install-${TARGET_TRIPLET}${short_buildtype}"
-)
+	)
 message(STATUS "Running install... finished.")
+set(ENV{PATH} "${path_backup}")

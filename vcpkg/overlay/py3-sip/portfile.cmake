@@ -53,5 +53,6 @@ execute_process(
 foreach(TOOL sip-build sip-distinfo sip-install sip-module sip-sdist sip-wheel)
     file(RENAME "${CURRENT_PACKAGES_DIR}/bin/${TOOL}" "${CURRENT_PACKAGES_DIR}/tools/${TOOL}")
 endforeach()
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin")
 
 file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
