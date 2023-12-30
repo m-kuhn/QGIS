@@ -52,6 +52,9 @@ execute_process(
 )
 foreach(TOOL sip-build sip-distinfo sip-install sip-module sip-sdist sip-wheel)
     file(RENAME "${CURRENT_PACKAGES_DIR}/bin/${TOOL}" "${CURRENT_PACKAGES_DIR}/tools/${TOOL}")
+    file(READ "${CURRENT_PACKAGES_DIR}/tools/${TOOL}" CURRENT_TOOL_SOURCE)
+    string(REPLACE "${PYTHON3_FOR_BUILD}" "${python_versioned}" CURRENT_TOOL_SOURCE_FIXED ${CURRENT_TOOL_SOURCE})
+    file(WRITE "${CURRENT_PACKAGES_DIR}/tools/${TOOL}" ${CURRENT_TOOL_SOURCE_FIXED})
 endforeach()
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin")
 
