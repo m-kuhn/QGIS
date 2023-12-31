@@ -107,8 +107,8 @@ else()
     vcpkg_list(SET make_opts V=1 -j ${VCPKG_CONCURRENCY} -f ${MAKEFILE})
     vcpkg_list(SET install_opts -j ${VCPKG_CONCURRENCY} -f ${MAKEFILE} DESTDIR=${CURRENT_PACKAGES_DIR}/lib/python3.11/site-packages)
 
-    # To find sip-distinfo during install
-    set(ENV{PATH} "${CURRENT_INSTALLED_DIR}/tools:$ENV{PATH}")
+    # To find sip-distinfo and python3 during install
+    set(ENV{PATH} "${CURRENT_INSTALLED_DIR}/tools:${CURRENT_INSTALLED_DIR}/tools/python3:$ENV{PATH}")
 endif()
 
 vcpkg_list(SET make_cmd_line ${make_command} ${make_opts})
