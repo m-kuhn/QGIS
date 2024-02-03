@@ -21,7 +21,6 @@
     "geos",
     "gsl",
     "libpq",
-    "pdal",
     "libspatialindex",
     "libspatialite",
     {
@@ -30,6 +29,7 @@
     },
     "libxml2",
     "libzip",
+    "pdal",
     "poly2tri",
     "proj",
     "protobuf",
@@ -45,6 +45,7 @@
     },
     "qt5-svg",
     "qt5-tools",
+    "qt5-webkit",
     {
       "name": "qt5-winextras",
       "platform": "windows"
@@ -62,8 +63,8 @@
     "bindings": {
       "description": "Determines whether Python bindings should be built",
       "dependencies": [
-        "python3",
-        "py3-pyqt5"
+        "py3-pyqt5",
+        "python3"
       ]
     },
     "customwidgets": {
@@ -76,8 +77,8 @@
       "description": "Determines whether the QGIS gui should be built",
       "dependencies": [
         "qscintilla-qt5",
-        "qwt-qt5",
-	"qt5-multimedia"
+        "qt5-multimedia",
+        "qwt-qt5"
       ]
     },
     "opencl": {
