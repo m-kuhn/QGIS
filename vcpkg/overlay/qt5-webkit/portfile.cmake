@@ -10,6 +10,7 @@ vcpkg_from_github(
     icu_targets.patch
     osgeo4w.patch
     makevalues_gperf.patch
+    arm64-osx.patch
 )
 
 file(REMOVE ${SOURCE_PATH}/Source/cmake/FindICU.cmake)
