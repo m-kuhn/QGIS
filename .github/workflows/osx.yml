@@ -1,5 +1,5 @@
 ---
-name: 🍎 MacOS (x64-osx)
+name: 🍎 MacOS
 on:
   push:
     branches:
@@ -12,8 +12,15 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-12
+            triplet: x64-osx
+          - os: macos-14
+            triplet: arm64-osx
     name: build (macos)
-    runs-on: macos-12
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: 🐣 Checkout
@@ -45,10 +52,10 @@ jobs:
                 -B "/Users/runner/build" \
                 -G Ninja \
                 -D CMAKE_BUILD_TYPE=Release \
-                -D CMAKE_INSTALL_PREFIX:PATH=/Users/runner/build/vcpkg_installed/x64-osx-dynamic \
+                -D CMAKE_INSTALL_PREFIX:PATH=/Users/runner/build/vcpkg_installed/${{ matrix.triplet }}-dynamic \
                 -D WITH_VCPKG=ON \
-                -D VCPKG_TARGET_TRIPLET=x64-osx-dynamic \
-                -D VCPKG_HOST_TRIPLET=x64-osx-dynamic \
+                -D VCPKG_TARGET_TRIPLET=${{ matrix.triplet }}-dynamic \
+                -D VCPKG_HOST_TRIPLET=${{ matrix.triplet }}-dynamic \
                 -D WITH_3D=OFF \
                 -D WITH_BINDINGS=OFF \
                 -D ENABLE_TESTS=OFF \
@@ -64,12 +71,12 @@ jobs:
         run: |
           cmake --install "/Users/runner/build" --config Release
           #          create-dmg --volname "QField Installer" --hide-extension qfield.app --volicon "${CMAKE_SOURCE_DIR}/platform/macos/installer.icns" --background "${CMAKE_SOURCE_DIR}/platform/macos/installer_background.png" --window-pos 200 120 --window-size 512 320 --icon-size 100 --icon "qfield.app" 130 160 --app-drop-link 400 155 --codesign "${MACOS_CODE_SIGN_IDENTITY}" ${CMAKE_BINARY_DIR}/QField-Installer.dmg  ${CMAKE_BINARY_DIR}/output/bin/qfield.app
-          create-dmg --volname "QGIS Installer" --hide-extension qgis.app --window-pos 200 120 --window-size 512 320 --icon-size 100 --app-drop-link 400 155 ${CMAKE_BINARY_DIR}/QGIS-Installer.dmg  /Users/runner/build/vcpkg_installed/x64-osx-dynamic
+          create-dmg --volname "QGIS Installer" --hide-extension qgis.app --window-pos 200 120 --window-size 512 320 --icon-size 100 --app-drop-link 400 155 ${CMAKE_BINARY_DIR}/QGIS-Installer.dmg  /Users/runner/build/vcpkg_installed/${{ matrix.triplet }}-dynamic
 
       - name: 📦 Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: "QField-dev-x64-osx-experimental-qt6"
+          name: "QField-dev-${{ matrix.triplet }}-experimental-qt6"
           path: ${{ env.CMAKE_BUILD_DIR }}/QField-Installer.dmg
 
       - name: tmate
