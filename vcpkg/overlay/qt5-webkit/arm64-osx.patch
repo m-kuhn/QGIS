@@ -17,3 +17,14 @@
          sys_cache_control(kCacheFunctionPrepareForExecution, code, size);
  #elif OS(LINUX)
          size_t page = pageSize();
+--- ./Source/JavaScriptCore/jsc.cpp	2020-03-05 03:16:37.000000000 +1000
++++ ./Source/JavaScriptCore/jsc.cpp	2020-09-22 21:30:04.000000000 +1000
+@@ -189,7 +189,7 @@
+ 
+ class ElementHandleOwner : public WeakHandleOwner {
+ public:
+-    bool isReachableFromOpaqueRoots(Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor) override
++    bool isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor) override
+     {
+         Element* element = jsCast<Element*>(handle.slot()->asCell());
+         return visitor.containsOpaqueRoot(element->root());
