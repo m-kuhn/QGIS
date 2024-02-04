@@ -76,9 +76,5 @@ jobs:
       - name: 📦 Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: "QField-dev-${{ matrix.triplet }}-experimental-qt6"
-          path: ${{ env.CMAKE_BUILD_DIR }}/QField-Installer.dmg
-
-      - name: tmate
-        if: failure()
-        uses: m-kuhn/action-tmate@patch-1
+          name: "QField-dev-${{ matrix.triplet }}"
+          path: /Users/runner/QGIS-Installer.dmg
