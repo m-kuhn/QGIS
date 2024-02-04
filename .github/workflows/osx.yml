@@ -46,6 +46,13 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: 🍮 ccache
+        uses: hendrikmuhs/ccache-action@v1.2.11 # Pinned until https://github.com/hendrikmuhs/ccache-action/issues/181
+        with:
+          key: ccache-${{ matrix.triplet }}
+          max-size: 200M
+  
+
       - name: 🌱 Install dependencies and generate project files
         run: |
           cmake -S "${{ github.workspace }}" \
@@ -60,6 +67,7 @@ jobs:
                 -D WITH_BINDINGS=OFF \
                 -D ENABLE_TESTS=OFF \
                 -D VCPKG_MANIFEST_FEATURES="process;gui;desktop;bindings" \
+                -D USE_CCACHE=ON \
                 -D NUGET_USERNAME=m-kuhn \
                 -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
