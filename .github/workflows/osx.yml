@@ -71,7 +71,7 @@ jobs:
         run: |
           cmake --install "/Users/runner/build" --config Release
           #          create-dmg --volname "QField Installer" --hide-extension qfield.app --volicon "${CMAKE_SOURCE_DIR}/platform/macos/installer.icns" --background "${CMAKE_SOURCE_DIR}/platform/macos/installer_background.png" --window-pos 200 120 --window-size 512 320 --icon-size 100 --icon "qfield.app" 130 160 --app-drop-link 400 155 --codesign "${MACOS_CODE_SIGN_IDENTITY}" ${CMAKE_BINARY_DIR}/QField-Installer.dmg  ${CMAKE_BINARY_DIR}/output/bin/qfield.app
-          create-dmg --volname "QGIS Installer" --hide-extension qgis.app --window-pos 200 120 --window-size 512 320 --icon-size 100 --app-drop-link 400 155 ${CMAKE_BINARY_DIR}/QGIS-Installer.dmg  /Users/runner/build/vcpkg_installed/${{ matrix.triplet }}-dynamic
+          create-dmg --volname "QGIS Installer" --hide-extension qgis.app --window-pos 200 120 --window-size 512 320 --icon-size 100 --app-drop-link 400 155 /Users/runner/QGIS-Installer.dmg  /Users/runner/build/vcpkg_installed/${{ matrix.triplet }}-dynamic/QGIS.app
 
       - name: 📦 Upload package
         uses: actions/upload-artifact@v3
