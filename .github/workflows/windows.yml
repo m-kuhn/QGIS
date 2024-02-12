@@ -26,9 +26,16 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: 🌱 Install dependencies and generate project files
+        shell: bash
+        env:
+          WORKSPACE: ${{ github.workspace }}
         run: |
-          cmake -S "${{ github.workspace }}" \
-                -B "${{ github.workspace }}\build" \
+          # Convert paths to bash compatible ones. Thanks to whoever decided to use drive letters and backslashes.
+          CMAKE_BUILD_DIR=$( cygpath "${CMAKE_BUILD_DIR}" )
+          SOURCE_DIR=$( cygpath "${WORKSPACE}" )
+
+          cmake -S "${SOURCE_DIR}" \
+                -B "${SOURCE_DIR}/build" \
                 -G Ninja \
                 -D CMAKE_BUILD_TYPE=Release \
                 -D WITH_VCPKG=ON \
@@ -40,8 +47,8 @@ jobs:
                 -D VCPKG_MANIFEST_FEATURES="process;gui;desktop;bindings" \
                 -D BUILD_WITH_QT6=ON \
                 -D USE_CCACHE=ON \
-                -D "FLEX_EXECUTABLE=${{ github.workspace }}\build\_deps\vcpkg-src\downloads\tools\win_bison\2.5.25\win_flex.exe" \
-                -D "BISON_EXECUTABLE=${{ github.workspace }}\build\_deps\vcpkg-src\downloads\tools\win_bison\2.5.25\win_bison.exe" \
+                -D "FLEX_EXECUTABLE=${SOURCE_DIR}/build/_deps/vcpkg-src/downloads/tools/win_bison/2.5.25/win_flex.exe" \
+                -D "BISON_EXECUTABLE=${SOURCE_DIR}/build/_deps/vcpkg-src/downloads/tools/win_bison/2.5.25/win_bison.exe" \
                 -D WITH_QTWEBKIT=OFF \
                 -D NUGET_USERNAME=m-kuhn \
                 -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }}
