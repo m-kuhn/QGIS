@@ -1,0 +1,14 @@
+{
+  "name": "py-sip",
+  "version": "6.7.12",
+  "description": "A tool that makes it easy to create Python bindings for C and C++ libraries",
+  "homepage": "https://www.riverbankcomputing.com/software/sip",
+  "dependencies": [
+    "py-wheel",
+    "py-setuptools",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

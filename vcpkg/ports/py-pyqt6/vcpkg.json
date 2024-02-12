@@ -1,0 +1,22 @@
+{
+  "name": "py-pyqt6",
+  "version": "6.6.1",
+  "description": "Python bindings for the Qt cross platform application toolkit",
+  "homepage": "https://www.riverbankcomputing.com/software/pyqt/",
+  "dependencies": [
+    "python3",
+    "py-sip",
+    "py-pyqt-builder",
+    "py-ply",
+    "py-packaging",
+    "qtbase",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
+    }
+  ]
+}
