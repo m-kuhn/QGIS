@@ -31,7 +31,6 @@ jobs:
           WORKSPACE: ${{ github.workspace }}
         run: |
           # Convert paths to bash compatible ones. Thanks to whoever decided to use drive letters and backslashes.
-          CMAKE_BUILD_DIR=$( cygpath "${CMAKE_BUILD_DIR}" )
           SOURCE_DIR=$( cygpath "${WORKSPACE}" )
 
           cmake -S "${SOURCE_DIR}" \
