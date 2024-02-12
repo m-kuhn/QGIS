@@ -12,13 +12,8 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - os: windows-2022
-            triplet: x64-windows
     name: build (windows)
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
 
     steps:
       - name: 🐣 Checkout
@@ -27,10 +22,8 @@ jobs:
       - name: 🐩 Install CMake and Ninja
         uses: lukka/get-cmake@latest
 
-      - name: ⚒ Setup XCode
-        uses: maxim-lobanov/setup-xcode@v1.5.1
-        with:
-          xcode-version: latest-stable
+      - name: 🧽 Developer Command Prompt for Microsoft Visual C++
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: 🌱 Install dependencies and generate project files
         run: |
@@ -39,8 +32,8 @@ jobs:
                 -G Ninja \
                 -D CMAKE_BUILD_TYPE=Release \
                 -D WITH_VCPKG=ON \
-                -D VCPKG_TARGET_TRIPLET=${{ matrix.triplet }} \
-                -D VCPKG_HOST_TRIPLET=${{ matrix.triplet }} \
+                -D VCPKG_TARGET_TRIPLET=x64-windows \
+                -D VCPKG_HOST_TRIPLET=x64-windows \
                 -D WITH_3D=OFF \
                 -D WITH_BINDINGS=ON \
                 -D ENABLE_TESTS=OFF \
