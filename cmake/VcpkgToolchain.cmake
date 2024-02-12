@@ -15,7 +15,7 @@ if(NOT VCPKG_TAG STREQUAL VCPKG_INSTALLED_VERSION)
   FetchContent_Declare(vcpkg
       GIT_REPOSITORY https://github.com/microsoft/vcpkg.git
       GIT_TAG ${VCPKG_TAG}
-      PATCH_COMMAND git apply --ignore-whitespace "${CMAKE_CURRENT_LIST_DIR}/32200.patch"
+#      PATCH_COMMAND git apply --ignore-whitespace "${CMAKE_CURRENT_LIST_DIR}/32200.patch"
   )
   FetchContent_MakeAvailable(vcpkg)
 else()
@@ -34,6 +34,12 @@ endif()
 set(VCPKG_INSTALLED_VERSION ${VCPKG_VERSION} CACHE STRING "" FORCE)
 
 message(STATUS "Building with vcpkg libraries version ${VCPKG_INSTALLED_VERSION}")
+
+if(BUILD_WITH_QT6)
+  set(VCPKG_MANIFEST_DIR "${CMAKE_SOURCE_DIR}/vcpkg/.qt6")
+else()
+  set(VCPKG_MANIFEST_DIR "${CMAKE_SOURCE_DIR}/vcpkg/.qt5")
+endif()
 
 # Binarycache can only be used on Windows or if mono is available.
 find_program(_VCPKG_MONO mono)
@@ -104,6 +110,3 @@ if(NOT "${NUGET_TOKEN}" STREQUAL "" AND (_HOST_IS_WINDOWS OR EXISTS "${_VCPKG_MO
   file(TO_NATIVE_PATH "${_CONFIG_PATH}" _CONFIG_PATH_NATIVE)
   set(ENV{VCPKG_BINARY_SOURCES} "$ENV{VCPKG_BINARY_SOURCES};nugetconfig,${_CONFIG_PATH_NATIVE},readwrite")
 endif()
-
-list(APPEND VCPKG_OVERLAY_PORTS "${CMAKE_SOURCE_DIR}/vcpkg/overlay")
-list(APPEND VCPKG_OVERLAY_TRIPLETS "${CMAKE_SOURCE_DIR}/vcpkg/triplets")
