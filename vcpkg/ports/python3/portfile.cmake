@@ -375,3 +375,5 @@ if (NOT VCPKG_TARGET_IS_WINDOWS)
         replace_dirs_in_config_file("${python_config_file}")
     endif()
 endif()
+
+configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-port-config.cmake" "${CURRENT_PACKAGES_DIR}/share/python3/vcpkg-port-config.cmake" @ONLY)
