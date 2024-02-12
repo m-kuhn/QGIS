@@ -1,0 +1,62 @@
+---
+name: 🪟 Windows
+on:
+  push:
+    branches:
+      - vcpkg
+      - release-**
+  pull_request:
+  release:
+    types: ['published']
+
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-2022
+            triplet: x64-windows
+    name: build (windows)
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: 🐣 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🐩 Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: ⚒ Setup XCode
+        uses: maxim-lobanov/setup-xcode@v1.5.1
+        with:
+          xcode-version: latest-stable
+
+      - name: 🌱 Install dependencies and generate project files
+        run: |
+          cmake -S "${{ github.workspace }}" \
+                -B "${{ github.workspace }}\build" \
+                -G Ninja \
+                -D CMAKE_BUILD_TYPE=Release \
+                -D WITH_VCPKG=ON \
+                -D VCPKG_TARGET_TRIPLET=${{ matrix.triplet }} \
+                -D VCPKG_HOST_TRIPLET=${{ matrix.triplet }} \
+                -D WITH_3D=OFF \
+                -D WITH_BINDINGS=ON \
+                -D ENABLE_TESTS=OFF \
+                -D VCPKG_MANIFEST_FEATURES="process;gui;desktop;bindings" \
+                -D BUILD_WITH_QT6=ON \
+                -D USE_CCACHE=ON \
+                -D "FLEX_EXECUTABLE=${{ github.workspace }}\build\_deps\vcpkg-src\downloads\tools\win_bison\2.5.25\win_flex.exe" \
+                -D "BISON_EXECUTABLE=${{ github.workspace }}\build\_deps\vcpkg-src\downloads\tools\win_bison\2.5.25\win_bison.exe" \
+                -D WITH_QTWEBKIT=OFF \
+                -D NUGET_USERNAME=m-kuhn \
+                -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🌋 Build
+        run: |
+          cmake --build "${{ github.workspace }}/build" --config Release
+
+      - name: 📦 Package
+        run: |
+          cmake --install "${{ github.workspace }}/build" --config Release
