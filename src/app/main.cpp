@@ -177,7 +177,7 @@ void usage( const QString &appName )
       << QStringLiteral( "        the PostGIS extension\n" )  ; // OK
 
 #ifdef Q_OS_WIN
-  MessageBox( nullptr,
+  MessageBoxA( nullptr,
               msg.join( QString() ).toLocal8Bit().constData(),
               "QGIS command line options",
               MB_OK );
