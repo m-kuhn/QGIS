@@ -2433,7 +2433,7 @@ endif()
 add_dependencies(qgis_core version)
 
 # because of htonl
-if (WIN32)
+if (WIN32 AND NOT BUILD_WITH_QT6)
   find_library(SETUPAPI_LIBRARY NAMES setupapi PATHS $ENV{LIB})
   find_library(VERSION_LIBRARY NAMES version PATHS $ENV{LIB})
   target_link_libraries(qgis_core wsock32 ${SETUPAPI_LIBRARY} dbghelp ${VERSION_LIBRARY})
