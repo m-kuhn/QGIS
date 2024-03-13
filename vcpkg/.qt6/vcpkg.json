@@ -30,7 +30,7 @@
       "libxml2",
       "libzip",
       "pdal",
-      "poly2tri",
+      "jhasse-poly2tri",
       "proj",
       "protobuf",
       "qca",
@@ -93,11 +93,28 @@
       }
     },
     "vcpkg-configuration": {
+      "default-registry": {
+        "kind": "git",
+        "baseline": "e105a86c97b8ab13d4dbe3f7bd9ebc17ece31634",
+        "repository": "https://github.com/microsoft/vcpkg"
+      },
+      "registries": [
+        {
+          "kind": "git",
+          "baseline": "719f4a42d3bb6b573503adf50c9216a620cd579f",
+          "repository": "https://github.com/open-vcpkg/python-registry",
+          "packages": [
+            "python3",
+            "py-*",
+            "vcpkg-python-scripts"
+          ]
+        }
+      ],    
       "overlay-ports": [
-        "../vcpkg/ports"
+        "../ports"
       ],
       "overlay-triplets": [
-        "../vcpkg/triplets"
+        "../triplets"
       ]
     }
   }
