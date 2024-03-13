@@ -29,7 +29,7 @@ class QWinTaskbarButton;
 class QWinTaskbarProgress;
 class QWindow;
 
-
+#if 0
 class QgsWinNativeEventFilter : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
@@ -45,7 +45,7 @@ class QgsWinNativeEventFilter : public QObject, public QAbstractNativeEventFilte
 
     quintptr mLastMessageHash = 0;
 };
-
+#endif
 
 class NATIVE_EXPORT QgsWinNative : public QgsNative
 {
@@ -72,7 +72,9 @@ class NATIVE_EXPORT QgsWinNative : public QgsNative
     bool mWinToastInitialized = false;
     QWinTaskbarButton *mTaskButton = nullptr;
     QWinTaskbarProgress *mTaskProgress = nullptr;
+#if 0
     QgsWinNativeEventFilter *mNativeEventFilter = nullptr;
+#endif
 
 };
 
