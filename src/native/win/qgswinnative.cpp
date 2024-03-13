@@ -23,11 +23,13 @@
 #include <QWindow>
 #include <QProcess>
 #include <QAbstractEventDispatcher>
+#if 0
 #include <QtWinExtras/QWinTaskbarButton>
 #include <QtWinExtras/QWinTaskbarProgress>
 #include <QtWinExtras/QWinJumpList>
 #include <QtWinExtras/QWinJumpListItem>
 #include <QtWinExtras/QWinJumpListCategory>
+#endif
 #include "wintoastlib.h"
 #include <Dbt.h>
 #include <memory>
@@ -57,6 +59,7 @@ void QgsWinNative::initializeMainWindow( QWindow *window,
     const QString &version )
 {
   mWindow = window;
+#if 0
   if ( mTaskButton )
     return; // already initialized!
 
@@ -84,13 +87,16 @@ void QgsWinNative::initializeMainWindow( QWindow *window,
   mNativeEventFilter = new QgsWinNativeEventFilter();
   QAbstractEventDispatcher::instance()->installNativeEventFilter( mNativeEventFilter );
   connect( mNativeEventFilter, &QgsWinNativeEventFilter::usbStorageNotification, this, &QgsNative::usbStorageNotification );
+#endif
 }
 
 void QgsWinNative::cleanup()
 {
+#if 0
   if ( mWinToastInitialized )
     WinToastLib::WinToast::instance()->clear();
   mWindow = nullptr;
+#endif
 }
 
 std::unique_ptr< wchar_t[] > pathToWChar( const QString &path )
@@ -116,6 +122,7 @@ void QgsWinNative::openFileExplorerAndSelectFile( const QString &path )
 
 void QgsWinNative::showFileProperties( const QString &path )
 {
+#if 0
   std::unique_ptr< wchar_t[] > pathArray = pathToWChar( path );
   ITEMIDLIST_unique_ptr pidl( ILCreateFromPathW( pathArray.get() ) );
   if ( pidl )
@@ -130,28 +137,36 @@ void QgsWinNative::showFileProperties( const QString &path )
 
     ShellExecuteEx( &info );
   }
+#endif
 }
 
 void QgsWinNative::showUndefinedApplicationProgress()
 {
+#if 0
   mTaskProgress->setMaximum( 0 );
   mTaskProgress->show();
+#endif
 }
 
 void QgsWinNative::setApplicationProgress( double progress )
 {
+#if 0
   mTaskProgress->setMaximum( 100 );
   mTaskProgress->show();
   mTaskProgress->setValue( static_cast< int >( std::round( progress ) ) );
+#endif
 }
 
 void QgsWinNative::hideApplicationProgress()
 {
+#if 0
   mTaskProgress->hide();
+#endif
 }
 
 void QgsWinNative::onRecentProjectsChanged( const std::vector<QgsNative::RecentProjectProperties> &recentProjects )
 {
+#if 0
   QWinJumpList jumplist;
   jumplist.recent()->clear();
   for ( const RecentProjectProperties &recentProject : recentProjects )
@@ -163,6 +178,7 @@ void QgsWinNative::onRecentProjectsChanged( const std::vector<QgsNative::RecentP
     newProject->setArguments( QStringList( recentProject.path ) );
     jumplist.recent()->addItem( newProject );
   }
+#endif
 }
 
 class NotificationHandler : public WinToastLib::IWinToastHandler
@@ -228,6 +244,7 @@ bool QgsWinNative::openTerminalAtPath( const QString &path )
   return process.startDetached( &pid );
 }
 
+#if 0
 bool QgsWinNativeEventFilter::nativeEventFilter( const QByteArray &eventType, void *message, long * )
 {
   static const QByteArray sWindowsGenericMSG{ "windows_generic_MSG" };
@@ -284,3 +301,4 @@ bool QgsWinNativeEventFilter::nativeEventFilter( const QByteArray &eventType, vo
   }
   return false;
 }
+#endif
