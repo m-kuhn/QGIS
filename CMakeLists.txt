@@ -1,7 +1,7 @@
 #############################################################
 # CMake settings
 cmake_minimum_required(VERSION 3.12.0)
-set(VCPKG_TAG 83972272512ce4ede5fc3b2ba98f6468b179f192)
+set(VCPKG_TAG e105a86c97b8ab13d4dbe3f7bd9ebc17ece31634)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_AUTORCC ON)
 # set path to additional CMake modules
