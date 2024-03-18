@@ -77,7 +77,7 @@ int CALLBACK WinMain( HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPST
 
         varfile.close();
       }
-      catch ( std::wifstream::failure &e )
+      catch ( std::ifstream::failure &e )
       {
         std::wstring message = L"Could not read environment variable list " + basename + L".vars" + L" [" + _wcserror( errno ) + L"]";
         showError( message, L"Error loading QGIS" );
@@ -87,7 +87,7 @@ int CALLBACK WinMain( HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPST
       try
       {
         std::wofstream file;
-        file.open( envfile, std::wifstream::out );
+        file.open( envfile, std::ifstream::out );
 
         for ( std::list<std::wstring>::const_iterator it = vars.begin();  it != vars.end(); ++it )
         {
@@ -95,7 +95,7 @@ int CALLBACK WinMain( HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPST
             file << *it << "=" << _wgetenv( it->c_str() ) << std::endl;
         }
       }
-      catch ( std::wifstream::failure &e )
+      catch ( std::ifstream::failure &e )
       {
         std::wstring message = L"Could not write environment file " + basename + L".env" + L" [" + _wcserror( errno ) + L"]";
         showError( message, L"Error loading QGIS" );
