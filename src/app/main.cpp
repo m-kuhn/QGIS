@@ -219,7 +219,7 @@ void myPrint( const char *fmt, ... )
 #if defined(Q_OS_WIN)
   char buffer[1024];
   vsnprintf( buffer, sizeof buffer, fmt, ap );
-  OutputDebugString( buffer );
+  OutputDebugStringA( buffer );
 #else
   vfprintf( stderr, fmt, ap );
 #endif
