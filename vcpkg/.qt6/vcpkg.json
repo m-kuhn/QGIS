@@ -52,6 +52,7 @@
         "description": "Determines whether Python bindings should be built",
         "dependencies": [
           "py-pyqt6",
+          "py-qscintilla",
           "python3"
         ]
       },
