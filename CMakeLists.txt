@@ -27,6 +27,18 @@ set(CPACK_PACKAGE_VERSION_MINOR "37")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(COMPLETE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 set(RELEASE_NAME "Master")
+
+# try to configure and build python bindings by default
+set (WITH_BINDINGS TRUE CACHE BOOL "Determines whether Python bindings should be built")
+if(WITH_BINDINGS)
+  list(APPEND VCPKG_MANIFEST_FEATURES "bindings")
+endif()
+
+set (WITH_GUI TRUE CACHE BOOL "Determines whether QGIS GUI library (and everything built on top of it) should be built")
+if(WITH_BINDINGS)
+  list(APPEND VCPKG_MANIFEST_FEATURES "gui")
+endif()
+
 include(VcpkgToolchain)
 project(qgis VERSION ${COMPLETE_VERSION})
 
@@ -127,8 +139,6 @@ if(WITH_CORE)
     endif()
   endforeach (GRASS_SEARCH_VERSION)
 
-  set (WITH_GUI TRUE CACHE BOOL "Determines whether QGIS GUI library (and everything built on top of it) should be built")
-
   set (WITH_OAUTH2_PLUGIN TRUE CACHE BOOL "Determines whether OAuth2 authentication method plugin should be built")
   if(WITH_OAUTH2_PLUGIN)
     set(HAVE_OAUTH2_PLUGIN TRUE)
@@ -167,8 +177,6 @@ if(WITH_CORE)
   set (NATIVE_CRSSYNC_BIN "" CACHE PATH "Path to a natively compiled synccrsdb binary. If set, crssync will not build but use provided bin instead.")
   mark_as_advanced (NATIVE_CRSSYNC_BIN)
 
-  # try to configure and build python bindings by default
-  set (WITH_BINDINGS TRUE CACHE BOOL "Determines whether Python bindings should be built")
   if (WITH_BINDINGS)
     # By default bindings will be installed only to QGIS directory
     # Someone might want to install it to python site-packages directory
@@ -779,6 +787,7 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   # disable macros that offend std::numeric_limits<T>::min()/max()
   add_definitions(-DNOMINMAX)
+  add_definitions(/bigobj)
 endif()
 
 # Prevent build when Qt api deprecated before this Qt version is used:
