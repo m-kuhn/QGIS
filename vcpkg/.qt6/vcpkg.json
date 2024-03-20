@@ -53,7 +53,8 @@
         "dependencies": [
           "py-pyqt6",
           "py-qscintilla",
-          "python3"
+          "python3",
+          "py-pip"
         ]
       },
       "customwidgets": {
