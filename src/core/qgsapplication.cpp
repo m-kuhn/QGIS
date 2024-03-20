@@ -412,6 +412,14 @@ void QgsApplication::init( QString profileFolder )
   {
     currentProjSearchPaths.append( projLib );
   }
+#else Q_OS_WIN
+  // append bundled proj lib for windows
+  QString projLib( QDir::cleanPath( pkgDataPath().append( "/proj" ) ) );
+  qWarning() << "Proj Lib " << projLib;
+  if ( QFile::exists( projLib ) )
+  {
+    currentProjSearchPaths.append( projLib );
+  }
 #endif // Q_OS_MACX
 
   char **newPaths = new char *[currentProjSearchPaths.length()];
@@ -1533,6 +1541,8 @@ void QgsApplication::initQgis()
 
   // create project instance if doesn't exist
   QgsProject::instance();
+
+  qWarning() << "Plugin path " << pluginPath;
 
   // Setup authentication manager for lazy initialization
   authManager()->setup( pluginPath(), qgisAuthDatabaseFilePath() );
@@ -2916,3 +2926,4 @@ QgsApplication::ApplicationMembers *QgsApplication::members()
     return sApplicationMembers;
   }
 }
+#include <moc_qgsapplication.cpp>
