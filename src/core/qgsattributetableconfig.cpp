@@ -314,8 +314,3 @@ bool QgsAttributeTableConfig::hasSameColumns( const QgsAttributeTableConfig &oth
 
   return false;
 }
-
-bool QgsAttributeTableConfig::ColumnConfig::operator== ( const ColumnConfig &other ) const
-{
-  return type == other.type && name == other.name && hidden == other.hidden && width == other.width;
-}
