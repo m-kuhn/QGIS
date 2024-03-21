@@ -54,7 +54,11 @@
           "py-pyqt6",
           "py-qscintilla",
           "python3",
-          "py-pip"
+          "py-pip",
+           {
+             "name": "gdal",
+             "features": ["python"]
+           }
         ]
       },
       "customwidgets": {
