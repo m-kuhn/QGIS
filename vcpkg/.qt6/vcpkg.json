@@ -33,7 +33,10 @@
       "jhasse-poly2tri",
       "proj",
       "protobuf",
-      "qca",
+      {
+        "name": "qca",
+        "features": ["ossl"]
+      },
       "qtbase",
       "qtlocation",
       "qtsvg",
