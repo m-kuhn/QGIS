@@ -35,6 +35,7 @@
       "protobuf",
       {
         "name": "qca",
+        "default-features": false,
         "features": ["ossl"]
       },
       "qtbase",
@@ -104,7 +105,7 @@
     "vcpkg-configuration": {
       "default-registry": {
         "kind": "git",
-        "baseline": "e105a86c97b8ab13d4dbe3f7bd9ebc17ece31634",
+        "baseline": "ad3bae57455a3c3ce528fcd47d8e8027d0498add",
         "repository": "https://github.com/microsoft/vcpkg"
       },
       "registries": [
@@ -118,7 +119,7 @@
             "vcpkg-python-scripts"
           ]
         }
-      ],    
+      ],
       "overlay-ports": [
         "../ports"
       ],
@@ -127,4 +128,3 @@
       ]
     }
   }
-  
