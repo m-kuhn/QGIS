@@ -20,7 +20,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets, QtCore
 from qgis.utils import iface
 
-, _ = uic.loadUiType(Path(__file__).parent / 'qgsplugindependenciesdialogbase.ui')
+Ui_QgsPluginDependenciesDialogBase, _ = uic.loadUiType(Path(__file__).parent / 'qgsplugindependenciesdialogbase.ui')
 
 class QgsPluginDependenciesDialog(QtWidgets.QDialog, Ui_QgsPluginDependenciesDialogBase):
     """A dialog that shows plugin dependencies and offers a way to install or upgrade the
