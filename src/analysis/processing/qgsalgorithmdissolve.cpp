@@ -36,15 +36,9 @@ QVariantMap QgsCollectorAlgorithm::processCollection( const QVariantMap &paramet
   if ( !sink )
     throw QgsProcessingException( invalidSinkError( parameters, QStringLiteral( "OUTPUT" ) ) );
 
-  QVariantMap outputs;
-  outputs.insert( QStringLiteral( "OUTPUT" ), dest );
-
   const QStringList fields = parameterAsStrings( parameters, QStringLiteral( "FIELD" ), context );
 
   const long count = source->featureCount();
-
-  if ( !( count > 0 ) )
-    return outputs;
 
   QgsFeature f;
   QgsFeatureIterator it = source->getFeatures( QgsFeatureRequest(), sourceFlags );
@@ -73,7 +67,7 @@ QVariantMap QgsCollectorAlgorithm::processCollection( const QVariantMap &paramet
         firstFeature = false;
       }
 
-      if ( f.hasGeometry() && !f.geometry().isEmpty() )
+      if ( f.hasGeometry() && !f.geometry().isNull() )
       {
         geomQueue.append( f.geometry() );
         if ( maxQueueLength > 0 && geomQueue.length() > maxQueueLength )
@@ -89,28 +83,25 @@ QVariantMap QgsCollectorAlgorithm::processCollection( const QVariantMap &paramet
       current++;
     }
 
-    if ( geomQueue.isEmpty() )
+    if ( current )
     {
-      outputFeature.clearGeometry();
-      if ( !sink->addFeature( outputFeature, QgsFeatureSink::FastInsert ) )
-        throw QgsProcessingException( writeFeatureError( sink.get(), parameters, QStringLiteral( "OUTPUT" ) ) );
-    }
-    else if ( !separateDisjoint )
-    {
-      outputFeature.setGeometry( collector( geomQueue ) );
-      if ( !sink->addFeature( outputFeature, QgsFeatureSink::FastInsert ) )
-        throw QgsProcessingException( writeFeatureError( sink.get(), parameters, QStringLiteral( "OUTPUT" ) ) );
-    }
-    else
-    {
-      const QgsGeometry combinedGeometry = collector( geomQueue );
-      for ( auto it = combinedGeometry.const_parts_begin(); it != combinedGeometry.const_parts_end(); ++it )
+      if ( !separateDisjoint )
       {
-        QgsGeometry partGeom( ( ( *it )->clone() ) );
-        partGeom.convertToMultiType();
-        outputFeature.setGeometry( partGeom );
+        outputFeature.setGeometry( collector( geomQueue ) );
         if ( !sink->addFeature( outputFeature, QgsFeatureSink::FastInsert ) )
           throw QgsProcessingException( writeFeatureError( sink.get(), parameters, QStringLiteral( "OUTPUT" ) ) );
+      }
+      else
+      {
+        const QgsGeometry combinedGeometry = collector( geomQueue );
+        for ( auto it = combinedGeometry.const_parts_begin(); it != combinedGeometry.const_parts_end(); ++it )
+        {
+          QgsGeometry partGeom( ( ( *it )->clone() ) );
+          partGeom.convertToMultiType();
+          outputFeature.setGeometry( partGeom );
+          if ( !sink->addFeature( outputFeature, QgsFeatureSink::FastInsert ) )
+            throw QgsProcessingException( writeFeatureError( sink.get(), parameters, QStringLiteral( "OUTPUT" ) ) );
+        }
       }
     }
   }
@@ -148,7 +139,7 @@ QVariantMap QgsCollectorAlgorithm::processCollection( const QVariantMap &paramet
         attributeHash.insert( indexAttributes, f.attributes() );
       }
 
-      if ( f.hasGeometry() && !f.geometry().isEmpty() )
+      if ( f.hasGeometry() && !f.geometry().isNull() )
       {
         geometryHash[ indexAttributes ].append( f.geometry() );
       }
@@ -202,6 +193,8 @@ QVariantMap QgsCollectorAlgorithm::processCollection( const QVariantMap &paramet
     }
   }
 
+  QVariantMap outputs;
+  outputs.insert( QStringLiteral( "OUTPUT" ), dest );
   return outputs;
 }
 
