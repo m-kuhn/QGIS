@@ -13,6 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsvectortiledataprovider.h"
 #include "qgsxyzvectortiledataprovider.h"
 #include "qgsthreadingutils.h"
 #include "qgstiles.h"
@@ -67,62 +68,81 @@ QList<QgsVectorTileRawData> QgsXyzVectorTileDataProviderBase::readTiles( const Q
 {
   QList<QgsVectorTileRawData> rawTiles;
   rawTiles.reserve( tiles.size() );
-  const QString source = sourcePath();
   for ( QgsTileXYZ id : std::as_const( tiles ) )
   {
-    if ( feedback && feedback->isCanceled() )
-      break;
-
-    const QByteArray rawData = loadFromNetwork( id, set.tileMatrix( id.zoomLevel() ), source, mAuthCfg, mHeaders, feedback, usage );
-    if ( !rawData.isEmpty() )
+    QMap<QString, QByteArray> data;
+    const QgsStringMap sources = sourcePaths();
+    QgsStringMap::const_iterator it = sources.constBegin();
+    for ( ; it != sources.constEnd(); ++it )
     {
-      rawTiles.append( QgsVectorTileRawData( id, rawData ) );
+      if ( feedback && feedback->isCanceled() )
+        break;
+
+      const QByteArray rawData = loadFromNetwork( id, set.tileMatrix( id.zoomLevel() ), it.value(), mAuthCfg, mHeaders, feedback, usage );
+      if ( !rawData.isEmpty() )
+      {
+        data[it.key()] = rawData;
+      }
     }
+    rawTiles.append( QgsVectorTileRawData( id, data ) );
   }
   return rawTiles;
 }
 
-QNetworkRequest QgsXyzVectorTileDataProviderBase::tileRequest( const QgsTileMatrixSet &set, const QgsTileXYZ &id, Qgis::RendererUsage usage ) const
+QList<QNetworkRequest> QgsXyzVectorTileDataProviderBase::tileRequests( const QgsTileMatrixSet &set, const QgsTileXYZ &id, Qgis::RendererUsage usage ) const
 {
-  QString urlTemplate = sourcePath();
+  QList<QNetworkRequest> requests;
 
-  if ( urlTemplate.contains( QLatin1String( "{usage}" ) ) )
+  const QgsStringMap sourcesPaths = sourcePaths();
+
+  QgsStringMap::const_iterator it = sourcesPaths.constBegin();
+
+  for ( ; it != sourcesPaths.constEnd(); it++ )
   {
-    switch ( usage )
+    QString urlTemplate = it.value();
+    QString layerName = it.key();
+
+    if ( urlTemplate.contains( QLatin1String( "{usage}" ) ) )
     {
-      case Qgis::RendererUsage::View:
-        urlTemplate.replace( QLatin1String( "{usage}" ), QLatin1String( "view" ) );
-        break;
-      case Qgis::RendererUsage::Export:
-        urlTemplate.replace( QLatin1String( "{usage}" ), QLatin1String( "export" ) );
-        break;
-      case Qgis::RendererUsage::Unknown:
-        urlTemplate.replace( QLatin1String( "{usage}" ), QString() );
-        break;
+      switch ( usage )
+      {
+        case Qgis::RendererUsage::View:
+          urlTemplate.replace( QLatin1String( "{usage}" ), QLatin1String( "view" ) );
+          break;
+        case Qgis::RendererUsage::Export:
+          urlTemplate.replace( QLatin1String( "{usage}" ), QLatin1String( "export" ) );
+          break;
+        case Qgis::RendererUsage::Unknown:
+          urlTemplate.replace( QLatin1String( "{usage}" ), QString() );
+          break;
+      }
     }
+
+    const QString url = QgsVectorTileUtils::formatXYZUrlTemplate( urlTemplate, id, set.tileMatrix( id.zoomLevel() ) );
+
+    QNetworkRequest request( url );
+    QgsSetRequestInitiatorClass( request, QStringLiteral( "QgsXyzVectorTileDataProvider" ) );
+    QgsSetRequestInitiatorId( request, id.toString() );
+
+    request.setAttribute( static_cast<QNetworkRequest::Attribute>( QgsVectorTileDataProvider::DATA_COLUMN ), id.column() );
+    request.setAttribute( static_cast<QNetworkRequest::Attribute>( QgsVectorTileDataProvider::DATA_ROW ), id.row() );
+    request.setAttribute( static_cast<QNetworkRequest::Attribute>( QgsVectorTileDataProvider::DATA_ZOOM ), id.zoomLevel() );
+    request.setAttribute( static_cast<QNetworkRequest::Attribute>( QgsVectorTileDataProvider::DATA_SOURCE_ID ), layerName );
+
+    request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
+    request.setAttribute( QNetworkRequest::CacheSaveControlAttribute, true );
+
+    mHeaders.updateNetworkRequest( request );
+
+    if ( !mAuthCfg.isEmpty() &&  !QgsApplication::authManager()->updateNetworkRequest( request, mAuthCfg ) )
+    {
+      QgsMessageLog::logMessage( tr( "network request update failed for authentication config" ), tr( "Network" ) );
+    }
+
+    requests << request;
   }
 
-  const QString url = QgsVectorTileUtils::formatXYZUrlTemplate( urlTemplate, id, set.tileMatrix( id.zoomLevel() ) );
-
-  QNetworkRequest request( url );
-  QgsSetRequestInitiatorClass( request, QStringLiteral( "QgsXyzVectorTileDataProvider" ) );
-  QgsSetRequestInitiatorId( request, id.toString() );
-
-  request.setAttribute( static_cast<QNetworkRequest::Attribute>( QNetworkRequest::User + 1 ), id.column() );
-  request.setAttribute( static_cast<QNetworkRequest::Attribute>( QNetworkRequest::User + 2 ), id.row() );
-  request.setAttribute( static_cast<QNetworkRequest::Attribute>( QNetworkRequest::User + 3 ), id.zoomLevel() );
-
-  request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
-  request.setAttribute( QNetworkRequest::CacheSaveControlAttribute, true );
-
-  mHeaders.updateNetworkRequest( request );
-
-  if ( !mAuthCfg.isEmpty() &&  !QgsApplication::authManager()->updateNetworkRequest( request, mAuthCfg ) )
-  {
-    QgsMessageLog::logMessage( tr( "network request update failed for authentication config" ), tr( "Network" ) );
-  }
-
-  return request;
+  return requests;
 }
 
 QByteArray QgsXyzVectorTileDataProviderBase::loadFromNetwork( const QgsTileXYZ &id, const QgsTileMatrix &tileMatrix, const QString &requestUrl, const QString &authid, const QgsHttpHeaders &headers, QgsFeedback *feedback, Qgis::RendererUsage usage )
@@ -394,6 +414,31 @@ QString QgsXyzVectorTileDataProvider::sourcePath() const
   QgsDataSourceUri dsUri;
   dsUri.setEncodedUri( dataSourceUri() );
   return dsUri.param( QStringLiteral( "url" ) );
+}
+
+QgsStringMap QgsXyzVectorTileDataProvider::sourcePaths() const
+{
+  QGIS_PROTECT_QOBJECT_THREAD_ACCESS
+
+  QgsDataSourceUri dsUri;
+  dsUri.setEncodedUri( dataSourceUri() );
+  dsUri.setEncodedUri( QString( "styleUrl=https://vectortiles.geo.admin.ch/styles/ch.swisstopo.lightbasemap.vt/style.json&url=https://vectortiles.geo.admin.ch/tiles/ch.swisstopo.base.vt/v1.0.0/{z}/{x}/{y}.pbf&type=xyz&zmax=14&zmin=0&urlLayerName=base_v1.0.0&url_2=https://vectortiles.geo.admin.ch/tiles/ch.swisstopo.relief.vt/v1.0.0/{z}/{x}/{y}.pbf&urlLayerName_2=terrain_v1.0.0" ) );
+
+  QgsStringMap paths = {{ dsUri.param( QStringLiteral( "urlLayerName" ) ), dsUri.param( QStringLiteral( "url" ) ) }};
+
+  int i = 2;
+  while ( true )
+  {
+    QString url = dsUri.param( QStringLiteral( "url_%2" ).arg( i ) );
+    QString urlLayerName = dsUri.param( QStringLiteral( "urlLayerName_%2" ).arg( i ) );
+    if ( url.isEmpty() || urlLayerName.isEmpty() )
+      break;
+
+    paths.insert( urlLayerName, url );
+    i++;
+  }
+
+  return paths;
 }
 
 ///@endcond
