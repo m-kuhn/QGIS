@@ -227,7 +227,21 @@ QVariantMap QgsXyzVectorTileDataProviderMetadata::decodeUri( const QString &uri 
   else
   {
     uriComponents.insert( QStringLiteral( "url" ), dsUri.param( QStringLiteral( "url" ) ) );
+    if ( dsUri.hasParam( QStringLiteral( "urlName" ) ) )
+      uriComponents.insert( QStringLiteral( "urlName" ), dsUri.param( QStringLiteral( "urlName" ) ) );
   }
+  int i = 2;
+  while ( true )
+  {
+    QString url = dsUri.param( QStringLiteral( "url_%2" ).arg( i ) );
+    QString urlName = dsUri.param( QStringLiteral( "urlName_%2" ).arg( i ) );
+    if ( url.isEmpty() || urlName.isEmpty() )
+      break;
+    uriComponents.insert( QStringLiteral( "urlName_%2" ).arg( i ), urlName );
+    uriComponents.insert( QStringLiteral( "url_%2" ).arg( i ), url );
+    i++;
+  }
+
 
   if ( dsUri.hasParam( QStringLiteral( "zmin" ) ) )
     uriComponents.insert( QStringLiteral( "zmin" ), dsUri.param( QStringLiteral( "zmin" ) ) );
@@ -251,6 +265,26 @@ QString QgsXyzVectorTileDataProviderMetadata::encodeUri( const QVariantMap &part
   QgsDataSourceUri dsUri;
   dsUri.setParam( QStringLiteral( "type" ), QStringLiteral( "xyz" ) );
   dsUri.setParam( QStringLiteral( "url" ), parts.value( parts.contains( QStringLiteral( "path" ) ) ? QStringLiteral( "path" ) : QStringLiteral( "url" ) ).toString() );
+  if ( parts.contains( QStringLiteral( "urlName" ) ) )
+    dsUri.setParam( QStringLiteral( "urlName" ), parts[ QStringLiteral( "urlName" ) ].toString() );
+
+  int i = 2;
+  while ( true )
+  {
+    QString urlNameKey = QStringLiteral( "urlName_%2" ).arg( i );
+    QString urlKey = QStringLiteral( "url_%2" ).arg( i );
+
+    if ( !parts.contains( urlNameKey ) || !parts.contains( urlKey ) )
+      break;
+    QString url = dsUri.param( QStringLiteral( "url_%2" ).arg( i ) );
+    QString urlName = dsUri.param( QStringLiteral( "urlName_%2" ).arg( i ) );
+    if ( url.isEmpty() || urlName.isEmpty() )
+      break;
+
+    dsUri.setParam( urlNameKey, parts[ urlNameKey ].toString() );
+    dsUri.setParam( urlKey, parts[ urlKey ].toString() );
+    i++;
+  }
 
   if ( parts.contains( QStringLiteral( "zmin" ) ) )
     dsUri.setParam( QStringLiteral( "zmin" ), parts[ QStringLiteral( "zmin" ) ].toString() );
@@ -422,19 +456,18 @@ QgsStringMap QgsXyzVectorTileDataProvider::sourcePaths() const
 
   QgsDataSourceUri dsUri;
   dsUri.setEncodedUri( dataSourceUri() );
-  dsUri.setEncodedUri( QString( "styleUrl=https://vectortiles.geo.admin.ch/styles/ch.swisstopo.lightbasemap.vt/style.json&url=https://vectortiles.geo.admin.ch/tiles/ch.swisstopo.base.vt/v1.0.0/{z}/{x}/{y}.pbf&type=xyz&zmax=14&zmin=0&urlLayerName=base_v1.0.0&url_2=https://vectortiles.geo.admin.ch/tiles/ch.swisstopo.relief.vt/v1.0.0/{z}/{x}/{y}.pbf&urlLayerName_2=terrain_v1.0.0" ) );
 
-  QgsStringMap paths = {{ dsUri.param( QStringLiteral( "urlLayerName" ) ), dsUri.param( QStringLiteral( "url" ) ) }};
+  QgsStringMap paths = {{ dsUri.param( QStringLiteral( "urlName" ) ), dsUri.param( QStringLiteral( "url" ) ) }};
 
   int i = 2;
   while ( true )
   {
     QString url = dsUri.param( QStringLiteral( "url_%2" ).arg( i ) );
-    QString urlLayerName = dsUri.param( QStringLiteral( "urlLayerName_%2" ).arg( i ) );
-    if ( url.isEmpty() || urlLayerName.isEmpty() )
+    QString urlName = dsUri.param( QStringLiteral( "urlName_%2" ).arg( i ) );
+    if ( url.isEmpty() || urlName.isEmpty() )
       break;
 
-    paths.insert( urlLayerName, url );
+    paths.insert( urlName, url );
     i++;
   }
 
