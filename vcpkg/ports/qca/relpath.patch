@@ -1,0 +1,54 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 4777321..9c1222b 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -19,9 +19,9 @@ if(DEVELOPER_MODE)
+   add_definitions(-DQCA_PLUGIN_PATH="${CMAKE_BINARY_DIR}/lib/${QCA_LIB_NAME}")
+ else()
+   if(USE_RELATIVE_PATHS)
+-    add_definitions(-DQCA_PLUGIN_PATH="${QCA_PREFIX_INSTALL_DIR}/${QCA_PLUGINS_INSTALL_DIR}")
+-  else()
+     add_definitions(-DQCA_PLUGIN_PATH="${QCA_PLUGINS_INSTALL_DIR}")
++  else()
++    add_definitions(-DQCA_PLUGIN_PATH="${QCA_PREFIX_INSTALL_DIR}/${QCA_PLUGINS_INSTALL_DIR}")
+   endif()
+ endif()
+ 
+diff --git a/src/qca_core.cpp b/src/qca_core.cpp
+index b0e9f47..8025eb6 100644
+--- a/src/qca_core.cpp
++++ b/src/qca_core.cpp
+@@ -469,6 +469,7 @@ QStringList pluginPaths()
+ #endif
+     // No empty strings
+     paths.removeAll(QString());
++    qWarning() << "Loading QCA plugins from " << paths;
+     return paths;
+ }
+ 
+diff --git a/src/qca_plugin.cpp b/src/qca_plugin.cpp
+index 3c094a9..46d8773 100644
+--- a/src/qca_plugin.cpp
++++ b/src/qca_plugin.cpp
+@@ -379,6 +379,7 @@ void ProviderManager::scan()
+ 
+             const QString filePath = fi.filePath(); // file name with path
+             const QString fileName = fi.fileName(); // just file name
++            qWarning() << " Checking " << filePath;
+ 
+             if (!QLibrary::isLibrary(filePath)) {
+                 logDebug(QStringLiteral("  %1: not a library, skipping").arg(fileName));
+@@ -403,11 +404,13 @@ void ProviderManager::scan()
+             ProviderItem *i = ProviderItem::load(filePath, &errstr);
+             if (!i) {
+                 logDebug(QStringLiteral("  %1: %2").arg(fileName, errstr));
++                qWarning() << " Error  " << fileName << " - " << errstr;
+                 continue;
+             }
+ 
+             const QString className = QString::fromLatin1(i->objectInstance()->metaObject()->className());
+ 
++            qWarning() << " ClassName  " << className;
+             const QString providerName = i->p->name();
+             if (haveAlready(providerName)) {
+                 logDebug(QStringLiteral("  %1: (class: %2, as %3) already loaded provider, skipping")

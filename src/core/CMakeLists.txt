@@ -2360,7 +2360,6 @@ target_include_directories(qgis_core PUBLIC
   ${CMAKE_SOURCE_DIR}/external/nmea
   ${CMAKE_SOURCE_DIR}/external/rtree/include
   ${CMAKE_SOURCE_DIR}/external/meshOptimizer
-  ${CMAKE_SOURCE_DIR}/external/tinygltf
 )
 
 if (WITH_PDF4QT)

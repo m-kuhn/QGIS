@@ -2,13 +2,15 @@
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "git",
-      "baseline": "090344cfc0b2844466e2251536fbe6c2408e5eb6",
-      "repository": "https://github.com/microsoft/vcpkg"
+      "reference": "e1886809d59b6fd4169006bf1a1f65eb2d97c667",
+      "baseline": "e1886809d59b6fd4169006bf1a1f65eb2d97c667",
+      "repository": "https://github.com/m-kuhn/vcpkg"
     },
     "registries": [
       {
         "kind": "git",
-        "baseline": "3edb3eb7092173dddb15359aa48b1599708fd96e",
+        "baseline": "6f244bbbd70800bc478cd19664f57fc96347fb3d",
+        "reference": "6f244bbbd70800bc478cd19664f57fc96347fb3d",
         "repository": "https://github.com/open-vcpkg/python-registry",
         "packages": [
           "python3",
@@ -45,6 +47,8 @@
         "poppler"
       ]
     },
+    "tinygltf",
+    "pdal-wrench",
     "geos",
     "gsl",
     "jhasse-poly2tri",
@@ -61,6 +65,7 @@
     "proj",
     "protobuf",
     {
+      "default-features": false,
       "name": "qca",
       "features": [
         "ossl"
@@ -93,6 +98,7 @@
         "py-pyqt6",
         "py-qscintilla",
         "py-pyyaml",
+        "py-psycopg2",
         "py-qgis-requirements",
         "python3"
       ]

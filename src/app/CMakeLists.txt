@@ -517,7 +517,10 @@ if (ANDROID)
   # require c++17
   target_compile_features(${QGIS_APP_NAME} PRIVATE cxx_std_17)
 else()
-  add_executable(${QGIS_APP_NAME} MACOSX_BUNDLE WIN32 ${QGIS_APPMAIN_SRCS})
+  add_executable(${QGIS_APP_NAME} WIN32 ${QGIS_APPMAIN_SRCS} main.cpp)
+  set_target_properties(${QGIS_APP_NAME} PROPERTIES
+    MACOSX_BUNDLE TRUE
+  )
 
   # require c++17
   target_compile_features(${QGIS_APP_NAME} PRIVATE cxx_std_17)
@@ -658,7 +661,7 @@ if (NOT WIN32)
 target_link_libraries(${QGIS_APP_NAME} QTSignal)
 endif()
 
-if (APPLE)
+if (FALSE)
   set_target_properties(${QGIS_APP_NAME} PROPERTIES
     INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${QGIS_LIB_DIR}
     INSTALL_RPATH_USE_LINK_PATH true

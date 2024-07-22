@@ -1,0 +1,13 @@
+diff --git a/configure.py b/configure.py
+index 3535757..d767e76 100755
+--- a/configure.py
++++ b/configure.py
+@@ -2341,6 +2341,8 @@ def create_template_vars(source_paths, build_paths, options, modules, disabled_m
+ 
+         if options.os == 'windows':
+             variables['implib_name'] = variables['static_lib_name']
++        else:
++            variables['implib_name'] = variables['libname']
+ 
+         variables['lib_link_cmd'] = variables['lib_link_cmd'].format(**variables)
+ 

@@ -1,0 +1,14 @@
+# -appstore-compliant will strip away odbc, psql and webengine plugins
+execute_process(COMMAND "${MACDEPLOYQT_EXECUTABLE}" QGIS.app -appstore-compliant -codesign=${MACOS_CODE_SIGN_IDENTITY} -sign-for-notarization=${MACOS_CODE_SIGN_IDENTITY} -verbose=3
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin
+                COMMAND_ERROR_IS_FATAL ANY
+                )
+
+execute_process(COMMAND create-dmg --volname "QGIS Installer" --hide-extension QGIS --volicon "${CMAKE_SOURCE_DIR}/platform/macos/installer.icns" --background "${CMAKE_SOURCE_DIR}/platform/macos/installer_background.png" --window-pos 200 120 --window-size 512 320 --icon-size 100 --icon "QGIS" 130 160 --app-drop-link 400 155 --codesign "${MACOS_CODE_SIGN_IDENTITY}" ${CMAKE_BINARY_DIR}/QGIS-Installer.dmg  ${CMAKE_BINARY_DIR}/output/bin/QGIS.app
+                RESULT_VARIABLE CREATE_DMG_FAILURE)
+
+if(CREATE_DMG_FAILURE)
+  message(STATUS "Creating dmg failed. Retrying ...")
+  execute_process(COMMAND create-dmg --volname "QGIS Installer" --hide-extension QGIS --volicon "${CMAKE_SOURCE_DIR}/platform/macos/installer.icns" --background "${CMAKE_SOURCE_DIR}/platform/macos/installer_background.png" --window-pos 200 120 --window-size 512 320 --icon-size 100 --icon "QGIS" 130 160 --app-drop-link 400 155 --codesign "${MACOS_CODE_SIGN_IDENTITY}" ${CMAKE_BINARY_DIR}/QGIS-Installer.dmg  ${CMAKE_BINARY_DIR}/output/bin/QGIS.app
+                COMMAND_ERROR_IS_FATAL ANY)
+endif()

@@ -525,7 +525,6 @@ target_include_directories(qgis_analysis PUBLIC
   ${CMAKE_SOURCE_DIR}/src/analysis/raster
   ${CMAKE_SOURCE_DIR}/src/analysis/vector/
   ${CMAKE_SOURCE_DIR}/src/analysis/vector/geometry_checker
-  ${CMAKE_SOURCE_DIR}/external/tinygltf
 
   ${CMAKE_BINARY_DIR}/src/analysis
 

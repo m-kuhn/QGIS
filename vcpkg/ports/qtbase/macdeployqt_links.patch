@@ -1,0 +1,27 @@
+diff --git a/src/tools/macdeployqt/shared/shared.cpp b/src/tools/macdeployqt/shared/shared.cpp
+index 6ff269b36d..6496097d1f 100644
+--- a/src/tools/macdeployqt/shared/shared.cpp
++++ b/src/tools/macdeployqt/shared/shared.cpp
+@@ -85,7 +85,21 @@ bool copyFilePrintStatus(const QString &from, const QString &to)
+         }
+     }
+ 
+-    if (QFile::copy(from, to)) {
++    QFileInfo fromFileInfo(from);
++
++    if (fromFileInfo.isSymLink()) {
++        const QString fromSymLinkTarget = fromFileInfo.absoluteDir().relativeFilePath(fromFileInfo.symLinkTarget());
++        if (QFile::link(fromSymLinkTarget, to)) {
++            return copyFilePrintStatus(fromFileInfo.absoluteDir().absoluteFilePath(fromSymLinkTarget), QFileInfo(to).absoluteDir().absoluteFilePath(fromSymLinkTarget));
++        }
++        else {
++            LogError() << "symlink copy failed from" << from;
++            LogError() << " to" << to;
++            return false;
++        }
++
++    }
++    else if (QFile::copy(from, to)) {
+         QFile dest(to);
+         dest.setPermissions(dest.permissions() | QFile::WriteOwner | QFile::WriteUser);
+         LogNormal() << " copied:" << from;

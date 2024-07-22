@@ -1,0 +1,47 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4047158..023df61 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -56,6 +56,8 @@ if (MSVC)
+     )
+ endif()
+ 
++add_subdirectory(api)
++
+ install(TARGETS untwine DESTINATION bin)
+ 
+ #-----------------
+diff --git a/api/CMakeLists.txt b/api/CMakeLists.txt
+index 9031116..4381a40 100644
+--- a/api/CMakeLists.txt
++++ b/api/CMakeLists.txt
+@@ -10,3 +10,29 @@ add_executable(qgt
+ 
+ untwine_target_compile_settings(qgt)
+ 
++include(GNUInstallDirs)
++
++add_library(qgis_untwine QgisUntwine.cpp)
++set_target_properties(qgis_untwine PROPERTIES PUBLIC_HEADER "QgisUntwine.hpp")
++
++target_compile_features(qgis_untwine PRIVATE cxx_std_11)
++
++install(TARGETS qgis_untwine
++  EXPORT UntwineConfig
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/untwine/api
++)
++
++export(TARGETS
++    qgis_untwine
++    NAMESPACE Untwine
++    FILE "${CMAKE_CURRENT_BINARY_DIR}/UntwineConfig.cmake"
++)
++
++install(EXPORT
++    UntwineConfig
++    DESTINATION "${CMAKE_INSTALL_DATADIR}/Untwine/cmake"
++    NAMESPACE Untwine::
++)

@@ -112,31 +112,6 @@ if (NOT LazPerf_FOUND)
   )
 endif()
 
-set(PDAL_WRENCH_SRCS
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/main.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/alg.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/boundary.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/clip.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/density.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/info.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/merge.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/thin.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/to_raster.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/to_raster_tin.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/to_vector.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/translate.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/utils.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/vpc.cpp
-
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/tile.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/BufferCache.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/Cell.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/FileProcessor.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/Las.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/TileGrid.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/ThreadPool.cpp
-  ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/Writer.cpp
-)
 
 ########################################################
 # Build
@@ -165,7 +140,36 @@ else()
   target_include_directories(untwine PRIVATE ${CMAKE_SOURCE_DIR}/external)
 endif()
 
-if (PDAL_2_5_OR_HIGHER)
+set (WITH_INTERNAL_PDAL_WRENCH TRUE CACHE BOOL "Determines whether the internal pdal_wrench copy should be built")
+if(WITH_INTERNAL_PDAL_WRENCH)
+  set(PDAL_WRENCH_SRCS
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/main.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/alg.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/boundary.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/clip.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/density.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/info.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/merge.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/thin.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/to_raster.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/to_raster_tin.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/to_vector.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/translate.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/utils.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/vpc.cpp
+  
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/tile.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/BufferCache.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/Cell.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/FileProcessor.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/Las.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/TileGrid.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/ThreadPool.cpp
+    ${CMAKE_SOURCE_DIR}/external/pdal_wrench/tile/Writer.cpp
+  )
+  if (NOT PDAL_2_5_OR_HIGHER)
+    message(FATAL_ERROR "Trying to build with internal pdal_wrench, but no usable PDAL could be found.")
+  endif()
   add_executable(pdal_wrench ${PDAL_WRENCH_SRCS})
   target_compile_features(pdal_wrench PRIVATE cxx_std_17)
 

@@ -62,6 +62,7 @@ function(FIND_QCAOSSL_PLUGIN_CPP PLUGIN_REQUIRED)
                         "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
                         "${QCA_INCLUDE_DIRECTORIES}"
                         "${QCA_LINK_LIBRARIES}"
+            RUN_OUTPUT_STDERR_VARIABLE XXXX
             COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT
         )
     ENDIF()

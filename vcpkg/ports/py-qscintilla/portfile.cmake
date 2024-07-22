@@ -1,3 +1,7 @@
+set(VCPKG_BUILD_TYPE release)
+set(VCPKG_C_FLAGS "-mmacosx-version-min=11.0")
+set(VCPKG_CXX_FLAGS "-mmacosx-version-min=11.0")
+
 vcpkg_download_distfile(ARCHIVE
     URLS "https://www.riverbankcomputing.com/static/Downloads/QScintilla/${VERSION}/QScintilla_src-${VERSION}.tar.gz"
     FILENAME "QScintilla-${VERSION}.tar.gz"
@@ -13,20 +17,25 @@ vcpkg_extract_source_archive(
 
 file(RENAME "${SOURCE_PATH}/Python/pyproject-qt5.toml" "${SOURCE_PATH}/Python/pyproject.toml")
 
+if(VCPKG_TARGET_IS_WINDOWS)
+  set(PY_LIB_DIR "tools/python3/Lib")
+else()
+  set(PY_LIB_DIR "lib/python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}")
+endif()
+
 set(SIPBUILD_ARGS
     "--qmake" "${CURRENT_INSTALLED_DIR}/tools/Qt6/bin/qmake${VCPKG_HOST_EXECUTABLE_SUFFIX}"
     "--api-dir" "${CURRENT_PACKAGES_DIR}/share/Qt6/qsci/api/python"
     "--qsci-features-dir" "${SOURCE_PATH}/src/features"
-    "--qsci-include-dir" "${SITE_PACKAGES}/src"
+    "--qsci-include-dir" "${CURRENT_INSTALLED_DIR}/${PY_LIB_DIR}/site-packages/PyQt6/bindings"
     "--qsci-library-dir" "${SOURCE_PATH}/src"
     "--no-make"
     "--verbose"
     "--build-dir" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
-    "--target-dir" "${CURRENT_INSTALLED_DIR}/tools/python3/Lib/site-packages/"
+    "--target-dir" "${CURRENT_INSTALLED_DIR}/${PY_LIB_DIR}/site-packages/"
+    "--qmake-setting" "QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0"
 )
 
-# TODO: help it find sip include dirs, manually patched into sipbuild/project.py for now
-# "--sip-include-dirs" "${CURRENT_INSTALLED_DIR}/tools/python3/Lib/site-packages/"
 
 vcpkg_backup_env_variables(VARS PATH)
 

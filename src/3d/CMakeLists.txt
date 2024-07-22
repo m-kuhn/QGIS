@@ -248,7 +248,6 @@ target_include_directories(qgis_3d PUBLIC
 
   ${CMAKE_BINARY_DIR}/src/3d
   ${CMAKE_SOURCE_DIR}/external/delaunator-cpp
-  ${CMAKE_SOURCE_DIR}/external/tinygltf
 )
 
 if (BUILD_WITH_QT6)
