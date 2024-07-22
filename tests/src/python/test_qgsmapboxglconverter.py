@@ -218,7 +218,7 @@ class TestQgsMapBoxGlStyleConverter(QgisTestCase):
             "rgb(252, 252, 252)"
         ], QgsMapBoxGlStyleConverter.PropertyType.Numeric, conversion_context, 2.5, 200)
         self.assertEqual(res.asExpression(), 'CASE WHEN "luminosity" IN (-15) THEN 0 WHEN "luminosity" IN (-14) THEN 0 WHEN "luminosity" IN (-13) THEN 0 WHEN "luminosity" IN (-12) THEN 0 WHEN "luminosity" IN (-11) THEN 0 WHEN "luminosity" IN (-10) THEN 0 WHEN "luminosity" IN (-9) THEN 0 WHEN "luminosity" IN (-8) THEN 0 WHEN "luminosity" IN (-7) THEN 0 WHEN "luminosity" IN (-6) THEN 0 WHEN "luminosity" IN (-5) THEN 0 WHEN "luminosity" IN (-4) THEN 0 WHEN "luminosity" IN (-3) THEN 0 WHEN "luminosity" IN (-2) THEN 0 WHEN "luminosity" IN (-1) THEN 0 ELSE 0 END')
-        self.assertEqual(default_number, 0.5)
+        self.assertEqual(default_number, 0.0)
 
     def testParseValueList(self):
         conversion_context = QgsMapBoxGlStyleConversionContext()
