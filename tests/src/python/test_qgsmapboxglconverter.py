@@ -188,7 +188,7 @@ class TestQgsMapBoxGlStyleConverter(QgisTestCase):
             "#e7e7e7"
         ], QgsMapBoxGlStyleConverter.PropertyType.Color, conversion_context, 2.5, 200)
         self.assertEqual(res.asExpression(),
-                         'CASE WHEN "type" IN (\'Air Transport\',\'Airport\') THEN \'#e6e6e6\' WHEN "type" IN (\'Education\') THEN \'#f7eaca\' WHEN "type" IN (\'Medical Care\') THEN \'#f3d8e7\' WHEN "type" IN (\'Road Transport\') THEN \'#f7f3ca\' WHEN "type" IN (\'Water Transport\') THEN \'#d8e6f3\' ELSE \'#e7e7e7\' END')
+                         'CASE WHEN "type" IN (\'Air Transport\',\'Airport\') THEN \'#e6e6e6\' WHEN "type" IS \'Education\' THEN \'#f7eaca\' WHEN "type" IS \'Medical Care\' THEN \'#f3d8e7\' WHEN "type" IS \'Road Transport\' THEN \'#f7f3ca\' WHEN "type" IS \'Water Transport\' THEN \'#d8e6f3\' ELSE \'#e7e7e7\' END')
         self.assertEqual(default_color.name(), '#e7e7e7')
 
         res, default_color, default_number = QgsMapBoxGlStyleConverter.parseMatchList([
@@ -279,7 +279,7 @@ class TestQgsMapBoxGlStyleConverter(QgisTestCase):
             "#e7e7e7"
         ], QgsMapBoxGlStyleConverter.PropertyType.Color, conversion_context, 2.5, 200)
         self.assertEqual(res.asExpression(),
-                         'CASE WHEN "type" IN (\'Air Transport\',\'Airport\') THEN \'#e6e6e6\' WHEN "type" IN (\'Education\') THEN \'#f7eaca\' WHEN "type" IN (\'Medical Care\') THEN \'#f3d8e7\' WHEN "type" IN (\'Road Transport\') THEN \'#f7f3ca\' WHEN "type" IN (\'Water Transport\') THEN \'#d8e6f3\' ELSE \'#e7e7e7\' END')
+                         'CASE WHEN "type" IN (\'Air Transport\',\'Airport\') THEN \'#e6e6e6\' WHEN "type" IS \'Education\' THEN \'#f7eaca\' WHEN "type" IS \'Medical Care\' THEN \'#f3d8e7\' WHEN "type" IS \'Road Transport\' THEN \'#f7f3ca\' WHEN "type" IS \'Water Transport\' THEN \'#d8e6f3\' ELSE \'#e7e7e7\' END')
         self.assertEqual(default_color.name(), '#e7e7e7')
 
         res, default_color, default_number = QgsMapBoxGlStyleConverter.parseValueList([
@@ -1449,7 +1449,8 @@ class TestQgsMapBoxGlStyleConverter(QgisTestCase):
         context = QgsMapBoxGlStyleConversionContext()
         sprite_image_file = f'{TEST_DATA_DIR}/vector_tile/sprites/swisstopo-sprite@2x.png'
         with open(sprite_image_file, 'rb') as f:
-            sprite_image = QImage.loadFromData(f)
+            sprite_image = QImage()
+            sprite_image.loadFromData(f)
         sprite_definition_file = f'{TEST_DATA_DIR}/vector_tile/sprites/swisstopo-sprite@2x.json'
         with open(sprite_definition_file) as f:
             sprite_definition = json.load(f)
