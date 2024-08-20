@@ -84,6 +84,21 @@ QgsMapBoxGlStyleConverter::~QgsMapBoxGlStyleConverter()
 
 void QgsMapBoxGlStyleConverter::parseLayers( const QVariantList &layers, QgsMapBoxGlStyleConversionContext *context )
 {
+  QgsMapBoxGlStyleConversionContext conversion_context;
+  QVariantList json = {
+    "step",
+    QVariantList({"zoom"}),
+    0,
+    7, QVariantList({"match", QVariantList({"get", "capital"}), QVariantList({2, 4}), 1, 0}),
+    8, QVariantList({"case", QVariantList({">", 14, QVariantList({"get", "rank"})}), 1, 0}),
+    9, QVariantList({"case", QVariantList({">", 15, QVariantList({"get", "rank"})}), 1, 0}),
+    10, QVariantList({"case", QVariantList({">", 18, QVariantList({"get", "rank"})}), 1, 0}),
+    11, QVariantList({"case", QVariantList({">", 28, QVariantList({"get", "rank"})}), 1, 0}),
+    12, 1,
+    13, 0
+  };
+  QgsProperty prop = QgsMapBoxGlStyleConverter::parseStepList(json, QgsMapBoxGlStyleConverter::PropertyType::Opacity, conversion_context, 100, 255);
+
   std::unique_ptr< QgsMapBoxGlStyleConversionContext > tmpContext;
   if ( !context )
   {

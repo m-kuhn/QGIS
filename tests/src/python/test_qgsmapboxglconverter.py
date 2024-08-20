@@ -32,7 +32,6 @@ from qgis.core import (
 )
 import unittest
 from qgis.testing import start_app, QgisTestCase
-from qgis.core import qgsDoubleNear
 
 from utilities import getTestFont, unitTestDataPath
 
@@ -1446,7 +1445,7 @@ class TestQgsMapBoxGlStyleConverter(QgisTestCase):
         prop = dd_props.property(QgsSymbolLayer.Property.PropertyFillColor)
         self.assertEqual(prop.asExpression(), 'CASE WHEN @vector_tile_zoom >= 14 AND @vector_tile_zoom < 16 THEN color_hsla(color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'hsl_hue\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'hsl_saturation\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'lightness\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'alpha\')) WHEN @vector_tile_zoom >= 16 THEN color_hsla(color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'hsl_hue\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'hsl_saturation\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'lightness\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'alpha\')) ELSE color_hsla(color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'hsl_hue\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'hsl_saturation\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'lightness\'), color_part(CASE WHEN "class" IN (\'roof\', \'cooling_tower\') THEN color_rgba(210,210,214,255) ELSE color_rgba(184,184,188,255) END,\'alpha\')) END')
 
-    def testRetrieveSrpite(self):
+    def testRetrieveSprite(self):
         context = QgsMapBoxGlStyleConversionContext()
         sprite_image_file = f'{TEST_DATA_DIR}/vector_tile/sprites/swisstopo-sprite@2x.png'
         with open(sprite_image_file, 'rb') as f:
