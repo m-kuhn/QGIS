@@ -381,7 +381,7 @@ class CORE_EXPORT QgsExpressionUtils
     /**
      * Gets a vector layer feature source for a \a value which corresponds to a vector layer, in a thread-safe way.
      */
-    static std::shared_ptr<QgsVectorLayerFeatureSource> getFeatureSource( const QVariant &value, const QgsExpressionContext *context, QgsExpression *e, bool &foundLayer );
+    static QgsVectorLayerFeatureSource *getFeatureSource( const QVariant &value, const QgsExpressionContext *context, QgsExpression *e, bool &foundLayer );
 
     /**
      * \deprecated QGIS 3.40. Not actually deprecated, but this method is not thread safe -- use with extreme caution only when the thread safety has already been taken care of by the caller!.
