@@ -1230,9 +1230,7 @@ set(QGIS_GUI_HDRS
   history/qgshistorywidgetcontext.h
 
   inputcontroller/qgs2dmapcontroller.h
-  inputcontroller/qgs2dgamepadcontroller.h
   inputcontroller/qgs3dmapcontroller.h
-  inputcontroller/qgs3dgamepadcontroller.h
   inputcontroller/qgsabstractinputcontroller.h
   inputcontroller/qgsinputcontrollermanager.h
 
@@ -1823,6 +1821,10 @@ if (BUILD_WITH_QT6)
 endif()
 
 if (WITH_QTGAMEPAD)
+    set(QGIS_GUI_HDRS ${QGIS_GUI_HDRS}
+      inputcontroller/qgs2dgamepadcontroller.h
+      inputcontroller/qgs3dgamepadcontroller.h
+    )
     target_link_libraries(qgis_gui
       ${QT_VERSION_BASE}::Gamepad
     )
