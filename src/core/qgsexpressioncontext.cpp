@@ -734,26 +734,26 @@ void QgsExpressionContext::clearCachedValues() const
   mCachedValues.clear();
 }
 
-void QgsExpressionContext::setThreadLocalCachedValue(const QString &key, const QVariant &value) const
+void QgsExpressionContext::setThreadLocalCachedValue( const QString &key, const QVariant &value ) const
 {
-    QMap<QString, QVariant> localData = mThreadLocalCachedValues.localData();
-    localData.insert( key, value );
-    mThreadLocalCachedValues.setLocalData( localData );
+  QMap<QString, QVariant> localData = mThreadLocalCachedValues.localData();
+  localData.insert( key, value );
+  mThreadLocalCachedValues.setLocalData( localData );
 }
 
-bool QgsExpressionContext::hasThreadLocalCachedValue(const QString &key) const
+bool QgsExpressionContext::hasThreadLocalCachedValue( const QString &key ) const
 {
   return mThreadLocalCachedValues.localData().contains( key );
 }
 
-QVariant QgsExpressionContext::threadLocalcachedValue(const QString &key) const
+QVariant QgsExpressionContext::threadLocalCachedValue( const QString &key ) const
 {
   return mThreadLocalCachedValues.localData().value( key );
 }
 
 void QgsExpressionContext::clearThreadLocalCachedValues() const
 {
-    mThreadLocalCachedValues.localData().clear();
+  mThreadLocalCachedValues.localData().clear();
 }
 
 QList<QgsMapLayerStore *> QgsExpressionContext::layerStores() const

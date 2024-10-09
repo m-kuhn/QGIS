@@ -22,9 +22,9 @@
 #include "qgsvectorlayerfeatureiterator.h"
 #include "qgssymbollayerutils.h"
 
-Q_DECLARE_METATYPE( std::shared_ptr<QgsVectorLayerFeatureSource> )
-
 ///@cond PRIVATE
+
+Q_DECLARE_METATYPE( std::shared_ptr<QgsVectorLayerFeatureSource> )
 
 QgsExpressionUtils::TVL QgsExpressionUtils::AND[3][3] =
 {
@@ -308,21 +308,36 @@ QVariant QgsExpressionUtils::runMapLayerFunctionThreadSafe( const QVariant &valu
   return res;
 }
 
-QgsVectorLayerFeatureSource *QgsExpressionUtils::getFeatureSource( const QVariant &value, const QgsExpressionContext *context, QgsExpression *e, bool &foundLayer )
+std::shared_ptr<QgsVectorLayerFeatureSource> QgsExpressionUtils::getFeatureSource( const QVariant &value, const QgsExpressionContext *context, QgsExpression *e, bool &foundLayer )
 {
-  QgsVectorLayerFeatureSource *featureSource = value.value<QgsVectorLayerFeatureSource*>();
+  const QString cacheKey = QStringLiteral( "featuresource/%1" ).arg( value.toString() );
 
+  // 1. Try to find a thread local cached value
+  std::shared_ptr<QgsVectorLayerFeatureSource> featureSource = context->threadLocalCachedValue( cacheKey ).value<std::shared_ptr<QgsVectorLayerFeatureSource>>();
   if ( featureSource )
   {
     foundLayer = true;
     return featureSource;
   }
 
+  // 2. Try to find a cached value from a preparation on main thread (see qgsexpressionfunction.cpp:prepareLayerNode).
+  //    If successful: claim it for this thread and clear the prepared value from main thread.
+  featureSource = context->cachedValue( cacheKey ).value<std::shared_ptr<QgsVectorLayerFeatureSource>>();
+  if ( featureSource )
+  {
+    context->setThreadLocalCachedValue( cacheKey, QVariant::fromValue( featureSource ) );
+    context->setCachedValue( cacheKey, QVariant() );
+    foundLayer = true;
+    return featureSource;
+  }
+
+  // 3. Fallback to resolving the layer on the main thread.
+  //    This will result in reduced performance, but cannot be avoided if the layer
   executeLambdaForMapLayer( value, context, e, [&featureSource]( QgsMapLayer * layer )
   {
     if ( QgsVectorLayer *vl = qobject_cast< QgsVectorLayer *>( layer ) )
     {
-      featureSource = new QgsVectorLayerFeatureSource( vl ); // TODO unique_ptr?
+      featureSource = std::make_shared<QgsVectorLayerFeatureSource>( vl );
     }
   }, foundLayer );
 

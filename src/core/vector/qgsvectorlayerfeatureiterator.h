@@ -150,7 +150,6 @@ class CORE_EXPORT QgsVectorLayerFeatureSource : public QgsAbstractFeatureSource
 #ifdef SIP_RUN
     QgsVectorLayerFeatureSource( const QgsVectorLayerFeatureSource &other );
 #endif
-    QMutex mGetFeatureMutex;
 };
 
 /**

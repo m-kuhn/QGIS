@@ -892,6 +892,62 @@ Clears all cached values from the context.
 .. seealso:: :py:func:`cachedValue`
 %End
 
+    void setThreadLocalCachedValue( const QString &key, const QVariant &value ) const;
+%Docstring
+Sets a value to cache within the expression context. This can be used to cache the results
+of expensive expression sub-calculations, to speed up future evaluations using the same
+expression context.
+
+:param key: unique key for retrieving cached value
+:param value: value to cache
+
+.. seealso:: :py:func:`hasThreadLocalCachedValue`
+
+.. seealso:: :py:func:`threadLocalcachedValue`
+
+.. seealso:: :py:func:`clearThreadLocalCachedValues`
+%End
+
+    bool hasThreadLocalCachedValue( const QString &key ) const;
+%Docstring
+Returns ``True`` if the expression context contains a cached value with a matching key.
+
+:param key: unique key used to store cached value
+
+.. seealso:: :py:func:`setThreadLocalCachedValue`
+
+.. seealso:: :py:func:`threadLocalcachedValue`
+
+.. seealso:: :py:func:`clearThreadLocalCachedValues`
+%End
+
+    QVariant threadLocalCachedValue( const QString &key ) const;
+%Docstring
+Returns the matching cached value, if set. This can be used to retrieve the previously stored results
+of an expensive expression sub-calculation.
+
+:param key: unique key used to store cached value
+
+:return: matching cached value, or invalid QVariant if not set
+
+.. seealso:: :py:func:`setThreadLocalCachedValue`
+
+.. seealso:: :py:func:`hasThreadLocalCachedValue`
+
+.. seealso:: :py:func:`clearThreadLocalCachedValues`
+%End
+
+    void clearThreadLocalCachedValues() const;
+%Docstring
+Clears all cached values from the context.
+
+.. seealso:: :py:func:`setThreadLocalCachedValue`
+
+.. seealso:: :py:func:`hasThreadLocalCachedValue`
+
+.. seealso:: :py:func:`threadLocalCachedValue`
+%End
+
     QList< QgsMapLayerStore * > layerStores() const;
 %Docstring
 Returns the list of layer stores associated with the context.

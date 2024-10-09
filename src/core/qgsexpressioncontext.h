@@ -855,7 +855,7 @@ class CORE_EXPORT QgsExpressionContext
      * \see hasThreadLocalCachedValue()
      * \see clearThreadLocalCachedValues()
      */
-    QVariant threadLocalcachedValue( const QString &key ) const;
+    QVariant threadLocalCachedValue( const QString &key ) const;
 
     /**
      * Clears all cached values from the context.
