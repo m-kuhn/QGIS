@@ -93,14 +93,6 @@
           ]
         },
         "py-pip",
-        "py-pyqt6",
-        "py-qscintilla",
-        "py-numpy",
-        "py-requests",
-        "py-markupsafe",
-        "py-pyyaml",
-        "py-psycopg2",
-        "py-qgis-requirements",
         "python3"
       ]
     },
