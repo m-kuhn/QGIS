@@ -11,7 +11,10 @@ jobs:
   vcpkg-check:
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
+
       - name: Generate diff report
+        id: vcpkg_diff
         uses: ./.github/actions/vcpkg_update_report
         with:
           vcpkg-manifest-dir: vcpkg
@@ -24,5 +27,6 @@ jobs:
           marker: vcpkg-report
           body: |
             ### 🧮 Vcpkg update report
-            ${{}}
+            ${{ steps.vcpkg_diff.outputs.report }}
+            ---xxx
           pr: ${{ github.event.number }}

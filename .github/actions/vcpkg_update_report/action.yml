@@ -20,35 +20,29 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # Checkout the head ref (PR branch)
-    - name: Checkout HEAD ref
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        path: head-ref
-
     # Run vcpkg install --dry-run on the head ref
     - name: Run vcpkg install (HEAD)
-      working-directory: ${{ inputs.vcpkg-manifest-dir }}
+      shell: bash
       run: |
-        ./vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=${{ inputs.vcpkg-manifest-dir }} > vcpkg-head-output.txt
+        vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=${{ inputs.vcpkg-manifest-dir }} > vcpkg-head-output.txt
 
     # Checkout the base ref (target branch)
     - name: Checkout BASE ref
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.base.sha }}
         path: base-ref
 
     # Run vcpkg install --dry-run on the base ref
     - name: Run vcpkg install (BASE)
-      working-directory: ${{ inputs.vcpkg-manifest-dir }}
+      shell: bash
       run: |
-        ./vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=${{ inputs.vcpkg-manifest-dir }} > vcpkg-base-output.txt
+        vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=base-ref/${{ inputs.vcpkg-manifest-dir }} > vcpkg-base-output.txt
 
 
     # Compare the outputs and generate a report
     - name: Compare vcpkg outputs
+      shell: bash
       id: compare
       run: |
         echo "Comparing vcpkg install outputs..."
