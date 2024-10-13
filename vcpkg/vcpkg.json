@@ -2,8 +2,7 @@
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "git",
-      "reference": "7adc2e4d49e8d0efc07a369079faa6bc3dbb90f3",
-      "baseline": "7adc2e4d49e8d0efc07a369079faa6bc3dbb90f3",
+      "baseline": "9558037875497b9db8cf38fcd7db68ec661bffe7",
       "repository": "https://github.com/microsoft/vcpkg"
     },
     "registries": [
@@ -94,14 +93,6 @@
           ]
         },
         "py-pip",
-        "py-pyqt6",
-        "py-qscintilla",
-        "py-numpy",
-        "py-requests",
-        "py-markupsafe",
-        "py-pyyaml",
-        "py-psycopg2",
-        "py-qgis-requirements",
         "python3"
       ]
     },
