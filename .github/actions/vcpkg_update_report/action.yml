@@ -47,12 +47,8 @@ runs:
       run: |
         echo "Comparing vcpkg install outputs..."
 
-        # Extract only relevant lines for comparison
-        grep "will be built and installed" vcpkg-head-output.txt > head-changes.txt || true
-        grep "will be built and installed" vcpkg-base-output.txt > base-changes.txt || true
-
         # Use diff to find differences between base and head
-        diff base-changes.txt head-changes.txt > vcpkg-diff.txt || true
+        diff vcpkg-base-output.txt vcpkg-head-output.txt > vcpkg-diff.txt || true
 
         # Parse the diff to get added, removed, and changed packages
         added=$(grep '^> ' vcpkg-diff.txt | sed 's/^> //g' || true)
