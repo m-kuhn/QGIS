@@ -74,6 +74,7 @@ runs:
           echo "#### No removed packages." >> vcpkg-report.txt
         fi
 
+        cat vcpkg-report.txt
         {
           echo 'report<<EOF'
           cat vcpkg-report.txt
