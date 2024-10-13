@@ -1,0 +1,87 @@
+name: Compare vcpkg install changes
+description: Compares vcpkg install outputs between the base and head refs on pull requests and generates a report.
+
+inputs:
+  vcpkg-manifest-dir:
+    description: 'Directory containing the vcpkg.json manifest'
+    required: true
+    default: '.'
+    type: string
+  triplet:
+    description: 'Triplet to use for vcpkg installation'
+    required: true
+    default: 'x64-linux'
+    type: string
+
+outputs:
+  report:
+    description: 'The report of added and removed packages after vcpkg installation comparison'
+
+runs:
+  using: "composite"
+  steps:
+    # Checkout the head ref (PR branch)
+    - name: Checkout HEAD ref
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        path: head-ref
+
+    # Run vcpkg install --dry-run on the head ref
+    - name: Run vcpkg install (HEAD)
+      working-directory: ${{ inputs.vcpkg-manifest-dir }}
+      run: |
+        ./vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=${{ inputs.vcpkg-manifest-dir }} > vcpkg-head-output.txt
+
+    # Checkout the base ref (target branch)
+    - name: Checkout BASE ref
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.base.sha }}
+        path: base-ref
+
+    # Run vcpkg install --dry-run on the base ref
+    - name: Run vcpkg install (BASE)
+      working-directory: ${{ inputs.vcpkg-manifest-dir }}
+      run: |
+        ./vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=${{ inputs.vcpkg-manifest-dir }} > vcpkg-base-output.txt
+
+
+    # Compare the outputs and generate a report
+    - name: Compare vcpkg outputs
+      id: compare
+      run: |
+        echo "Comparing vcpkg install outputs..."
+
+        # Extract only relevant lines for comparison
+        grep "will be built and installed" vcpkg-head-output.txt > head-changes.txt || true
+        grep "will be built and installed" vcpkg-base-output.txt > base-changes.txt || true
+
+        # Use diff to find differences between base and head
+        diff base-changes.txt head-changes.txt > vcpkg-diff.txt || true
+
+        # Parse the diff to get added, removed, and changed packages
+        added=$(grep '^> ' vcpkg-diff.txt | sed 's/^> //g' || true)
+        removed=$(grep '^< ' vcpkg-diff.txt | sed 's/^< //g' || true)
+
+        # Prepare the report
+        echo "### vcpkg installation changes report" > vcpkg-report.txt
+        if [ -n "$added" ]; then
+          echo "#### Added packages:" >> vcpkg-report.txt
+          echo "$added" >> vcpkg-report.txt
+        else
+          echo "#### No added packages." >> vcpkg-report.txt
+        fi
+
+        if [ -n "$removed" ]; then
+          echo "#### Removed packages:" >> vcpkg-report.txt
+          echo "$removed" >> vcpkg-report.txt
+        else
+          echo "#### No removed packages." >> vcpkg-report.txt
+        fi
+
+        {
+          echo 'report<<EOF'
+          cat vcpkg-report.txt
+          echo EOF
+        } >> "$GITHUB_OUTPUT"
