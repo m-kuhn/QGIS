@@ -72,7 +72,6 @@ runs:
 
         cat vcpkg-head-output.txt
         echo "2222"
-        cat head-changes.txt
         echo "xxxx"
         cat vcpkg-diff.txt
         echo "yyyy"
