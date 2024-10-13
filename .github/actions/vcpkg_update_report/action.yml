@@ -74,6 +74,8 @@ runs:
           echo "#### No removed packages." >> vcpkg-report.txt
         fi
 
+        cat vcpkg-head-output.txt
+        echo "2222"
         cat head-changes.txt
         echo "xxxx"
         cat vcpkg-diff.txt
