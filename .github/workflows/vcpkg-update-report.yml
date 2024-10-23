@@ -29,7 +29,5 @@ jobs:
           marker: vcpkg-report
           body: |
             ### 🧮 Vcpkg update report
-            ```diff
             ${{ steps.vcpkg_diff.outputs.report }}
-            ```
           pr: ${{ github.event.number }}
