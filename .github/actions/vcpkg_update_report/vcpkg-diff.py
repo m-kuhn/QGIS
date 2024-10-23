@@ -1,5 +1,6 @@
 import re
 
+
 def extract_packages(data):
     """
     Extract package name, triplet, version, and features information from the file content.
@@ -8,15 +9,20 @@ def extract_packages(data):
     lines = data.strip().split("\n")
     for line in lines:
         # Regex to match the package format and capture features inside brackets
-        match = re.match(r"\s*\*\s+([^\[\]:]+)(?:\[(.*?)\])?:([^\[\]@]+)@([^\s]+)\s+--", line)
+        match = re.match(
+            r"\s*\*\s+([^\[\]:]+)(?:\[(.*?)\])?:([^\[\]@]+)@([^\s]+)\s+--", line
+        )
         if match:
             package_name = match.group(1)
             features = match.group(2) if match.group(2) else ""
             triplet = match.group(3)
             version = match.group(4)
-            features_list = [feature.strip() for feature in features.split(',')] if features else []
+            features_list = (
+                [feature.strip() for feature in features.split(",")] if features else []
+            )
             packages[package_name] = (triplet, version, features_list)
     return packages
+
 
 def compare_features(features1, features2):
     """
@@ -25,6 +31,7 @@ def compare_features(features1, features2):
     added_features = set(features2) - set(features1)
     removed_features = set(features1) - set(features2)
     return added_features, removed_features
+
 
 def generate_report(file1_content, file2_content):
     # Extract package information from both files
@@ -48,11 +55,11 @@ def generate_report(file1_content, file2_content):
                 updated_parts.append(f"{version1} -> {version2}")
             added_features, removed_features = compare_features(features1, features2)
             if added_features:
-                updated_parts.append('+' + ', '.join(added_features))
+                updated_parts.append("+" + ", ".join(added_features))
             if removed_features:
-                updated_parts.append('-' + ', '.join(removed_features))
+                updated_parts.append("-" + ", ".join(removed_features))
             if updated_parts:
-                updated.append(f"{pkg}: " + ' '.join(updated_parts))
+                updated.append(f"{pkg}: " + " ".join(updated_parts))
 
     # Identify added packages
     for pkg in file2_packages:
@@ -77,17 +84,18 @@ def generate_report(file1_content, file2_content):
     for pkg in updated:
         print(f" - {pkg}")
 
+
 def read_file(file_path):
     """
     Read the content of a file.
     """
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         return file.read()
 
+
 # Read files
-file1_content = read_file('/tmp/vcpkg-base-output.txt')
-file2_content = read_file('/tmp/vcpkg-head-output.txt')
+file1_content = read_file("/tmp/vcpkg-base-output.txt")
+file2_content = read_file("/tmp/vcpkg-head-output.txt")
 
 # Generate the report
 generate_report(file1_content, file2_content)
-
