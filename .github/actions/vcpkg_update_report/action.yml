@@ -16,6 +16,7 @@ inputs:
 outputs:
   report:
     description: 'The report of added and removed packages after vcpkg installation comparison'
+    value: ${{ steps.compare.outputs.report }}
 
 runs:
   using: "composite"
@@ -30,8 +31,8 @@ runs:
     - name: Run vcpkg install (BASE)
       shell: bash
       run: |
-        git checkout ${{ github.event.pull_request.base.sha }}
-        vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=base-ref/${{ inputs.vcpkg-manifest-dir }} > /tmp/vcpkg-base-output.txt
+        git worktree add .base-ref ${{ github.event.pull_request.base.sha }}
+        vcpkg install --dry-run --triplet ${{ inputs.triplet }} --x-manifest-root=.base-ref/${{ inputs.vcpkg-manifest-dir }} > /tmp/vcpkg-base-output.txt
 
 
     # Compare the outputs and generate a report
@@ -39,9 +40,10 @@ runs:
       shell: bash
       id: compare
       run: |
-        diff /tmp/vcpkg-base-output.txt /tmp/vcpkg-head-output.txt
+        python3 ${GITHUB_ACTION_PATH}/vcpkg-diff.py > /tmp/vcpkg-report.txt
+        cat /tmp/vcpkg-report.txt
         {
           echo 'report<<EOF'
-          cat /tmp/vcpkg-report.diff
+          cat /tmp/vcpkg-report.txt
           echo EOF
         } >> "$GITHUB_OUTPUT"

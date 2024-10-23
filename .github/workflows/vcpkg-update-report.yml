@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 30
 
       - name: Generate diff report
         id: vcpkg_diff
@@ -27,7 +29,5 @@ jobs:
           marker: vcpkg-report
           body: |
             ### 🧮 Vcpkg update report
-            ```diff
             ${{ steps.vcpkg_diff.outputs.report }}
-            ```
           pr: ${{ github.event.number }}
