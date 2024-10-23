@@ -60,19 +60,22 @@ def generate_report(file1_content, file2_content):
             added.append(pkg)
 
     # Print the report
-    print("Added packages:")
+    if added:
+        print("**Added packages:**")
     for pkg in added:
         triplet, version, features = file2_packages[pkg]
-        print(f"  {pkg}: {version} (Features: {', '.join(features)})")
+        print(f" - {pkg}: {version} (Features: {', '.join(features)})")
 
-    print("\nRemoved packages:")
+    if removed:
+        print("\n**Removed packages:**")
     for pkg in removed:
         triplet, version, features = file1_packages[pkg]
-        print(f"  {pkg}: {version} (Features: {', '.join(features)})")
+        print(f" - {pkg}: {version} (Features: {', '.join(features)})")
 
-    print("\nUpdated packages:")
+    if updated:
+        print("\n**Updated packages:**")
     for pkg in updated:
-        print(f"  {pkg}")
+        print(f" - {pkg}")
 
 def read_file(file_path):
     """
