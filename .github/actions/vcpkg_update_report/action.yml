@@ -39,7 +39,7 @@ runs:
       shell: bash
       id: compare
       run: |
-        diff /tmp/vcpkg-base-output.txt /tmp/vcpkg-head-output.txt
+        python3 ./vcpkg-diff.py  /tmp/vcpkg-head-output.txt
         {
           echo 'report<<EOF'
           cat /tmp/vcpkg-report.diff

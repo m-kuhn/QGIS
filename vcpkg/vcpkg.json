@@ -2,13 +2,13 @@
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "git",
-      "baseline": "9558037875497b9db8cf38fcd7db68ec661bffe7",
+      "baseline": "07b30b49e5136a36100a2ce644476e60d7f3ddc1",
       "repository": "https://github.com/microsoft/vcpkg"
     },
     "registries": [
       {
         "kind": "git",
-        "baseline": "ca825c7a82276390809adda410246720e54964c2",
+        "baseline": "d4bc16c09fae1c10c74827ffe73b6c54b287021d",
         "repository": "https://github.com/open-vcpkg/python-registry",
         "packages": [
           "python3",
@@ -92,6 +92,13 @@
             "python"
           ]
         },
+        "py-autopep8",
+        "py-dateutil",
+        "py-isort",
+        "py-jinja2",
+        "py-markupsafe",
+        "py-numpy",
+        "py-owslib",
         "py-pip",
         "python3"
       ]
