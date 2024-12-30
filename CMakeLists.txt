@@ -9,6 +9,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0053 NEW)
 cmake_policy(SET CMP0071 NEW)
+cmake_policy(SET CMP0082 NEW) # Install rules from add_subdirectory() calls are interleaved with those in caller
 cmake_policy(SET CMP0094 NEW)
 if(NOT "${CMAKE_VERSION}" VERSION_LESS "3.27")
   cmake_policy(SET CMP0144 NEW)
@@ -948,64 +949,27 @@ if (WITH_CORE)
   else()
 
     if(APPLE)
-        set(QGIS_MACAPP_FRAMEWORK TRUE CACHE BOOL "Build as a framework on OSX")
+        set(QGIS_MAC_BUNDLE TRUE CACHE BOOL "Install into a mac bundle")
     endif()
 
-    if (APPLE AND QGIS_MACAPP_FRAMEWORK)
-      if (POLICY CMP0042) # in CMake 3.0.0+
-        set (CMAKE_MACOSX_RPATH OFF) # otherwise ON by default
-      endif()
-      if (POLICY CMP0068) # in CMake 3.9.0+
-        cmake_policy(SET CMP0068 NEW)
-      endif()
-      # for Mac OS X, everything is put inside an application bundle
-      # save the root install prefix for the app later
-      set (QGIS_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-      set (QGIS_MACAPP_PREFIX ${CMAKE_INSTALL_PREFIX}/${QGIS_APP_NAME}.app/Contents)
-      # common prefix for components, let cmake handle it
-      set (CMAKE_INSTALL_PREFIX ${QGIS_MACAPP_PREFIX}/MacOS)
-      # 5 bundling levels, each includes previous
-      #  -1  nothing
-      #   0  fixup the library paths for all QGIS libraries with @loader_path
-      #   1  Qt frameworks
-      #   2  non-system libraries, "standard"
-      #   3  non-system frameworks, "standalone"
-      set (QGIS_MACAPP_BUNDLE 1 CACHE STRING "What to bundle into app package")
-      set (QGIS_MACAPP_BUNDLE_USER "" CACHE STRING "Path to user bundling script")
-      set (QGIS_MACAPP_INSTALL_DEV FALSE CACHE BOOL "Install developer frameworks")
-      set (QGIS_MACAPP_DEV_PREFIX "/Library/Frameworks" CACHE STRING "Path to install developer frameworks")
+    if (APPLE AND QGIS_MAC_BUNDLE)
+      set(CMAKE_MACOSX_RPATH ON) # If this is off, the path will be stripped (completely) at install time, we want to preserve the `@rpath` prefix
+      set(CMAKE_SKIP_RPATH TRUE)
 
-      set (DEFAULT_BIN_SUBDIR      bin)
-      set (QGIS_BIN_SUBDIR_REV     ..)
-      set (DEFAULT_CGIBIN_SUBDIR   fcgi-bin)
-      set (QGIS_CGIBIN_SUBDIR_REV  ..)
-      set (DEFAULT_LIB_SUBDIR      lib)
-      set (QGIS_LIB_SUBDIR_REV     ..)
-      set (QGIS_FW_SUBDIR          ../Frameworks)
-      set (QGIS_FW_SUBDIR_REV      ../MacOS)
-      set (DEFAULT_DATA_SUBDIR     ../Resources)
-      set (QGIS_DATA_SUBDIR_REV    ../MacOS)
-      set (DEFAULT_LIBEXEC_SUBDIR  lib/qgis)
-      set (QGIS_LIBEXEC_SUBDIR_REV ../..)
-      set (DEFAULT_PLUGIN_SUBDIR   ../PlugIns/qgis)
-      set (QGIS_PLUGIN_SUBDIR_REV  ../../MacOS)
-      set (DEFAULT_INCLUDE_SUBDIR  include/qgis)
-      set (DEFAULT_QML_SUBDIR     qml)
+      set(APP_BUNDLE_DIR "${QGIS_APP_NAME}.app")
+      set(APP_CONTENTS_DIR "${APP_BUNDLE_DIR}/Contents")
+      set(APP_MACOS_DIR "${APP_CONTENTS_DIR}/MacOS")
+      set(APP_FRAMEWORKS_DIR "${APP_CONTENTS_DIR}/Frameworks")
+      set(APP_RESOURCES_DIR "${APP_CONTENTS_DIR}/Resources")
+      set(APP_PLUGINS_DIR "${APP_CONTENTS_DIR}/PlugIns")
 
-      # Set server moodules path to DEFAULT_LIBEXEC_SUBDIR+'/server'
-      set (DEFAULT_SERVER_MODULE_SUBDIR ${DEFAULT_LIBEXEC_SUBDIR}/server)
-
-      # path for framework references when running from build directory
-      # changed later to reference in-app resources upon install
-      set (CMAKE_INSTALL_NAME_DIR ${CMAKE_BINARY_DIR}/output/lib)
-      # recent cmakes force SDKs, recent SDKs don't have user symlinks
-      # need to find non-system frameworks
-      # cmake bug #0007250 - CMAKE_SHARED_LINKER_FLAGS ignored when creating
-      # a framework, so these need to be manually handled with LINK_FLAGS options
-      set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -F/Library/Frameworks")
-      set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -F/Library/Frameworks")
-      set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
-
+      set(DEFAULT_BIN_SUBDIR      ${APP_MACOS_DIR})
+      set(DEFAULT_LIB_SUBDIR      ${APP_FRAMEWORKS_DIR})
+      set(DEFAULT_DATA_SUBDIR     ${APP_RESOURCES_DIR}/qgis)
+      set(DEFAULT_LIBEXEC_SUBDIR  ${APP_MACOS_DIR})
+      set(DEFAULT_PLUGIN_SUBDIR   ${APP_PLUGINS_DIR}/qgis)
+      set(DEFAULT_INCLUDE_SUBDIR  include/qgis) # TODO: disable?
+      set(DEFAULT_QML_SUBDIR      ${APP_RESOURCES_DIR}/qgis/qml)
     else()
       # UNIX
       set (DEFAULT_BIN_SUBDIR     bin)
@@ -1018,13 +982,6 @@ if (WITH_CORE)
       set (DEFAULT_QML_SUBDIR     qml)
 
       set (DEFAULT_SERVER_MODULE_SUBDIR ${DEFAULT_LIBEXEC_SUBDIR}/server)
-
-      # QGIS_MACAPP_FRAMEWORK=FALSE
-      if(APPLE)
-        set (QGIS_MACAPP_BUNDLE -1)
-        set (CMAKE_FRAMEWORK FALSE)
-        set (QGIS_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-      endif()
     endif()
 
   endif()
@@ -1251,22 +1208,6 @@ if (WITH_CORE)
     add_subdirectory(python)
   endif()
 
-  if (APPLE)
-    # must be last for install, so install_name_tool can do its work
-    add_subdirectory(mac)
-
-    # allow QGIS to be run directly from build directory and to run unit tests
-    execute_process(COMMAND /bin/mkdir -p "${QGIS_OUTPUT_DIRECTORY}/lib")
-    execute_process(
-      COMMAND /bin/ln -fs ../../Plugins/qgis/qgisgrass6.framework lib/
-      WORKING_DIRECTORY "${QGIS_OUTPUT_DIRECTORY}"
-    )
-    execute_process(
-      COMMAND /bin/ln -fs ../../Plugins/qgis/qgisgrass7.framework lib/
-      WORKING_DIRECTORY "${QGIS_OUTPUT_DIRECTORY}"
-    )
-  endif()
-
   # manual page - makes sense only on unix systems
   if (UNIX AND NOT APPLE)
     install (FILES qgis.1 DESTINATION ${QGIS_MANUAL_DIR}/man1)
@@ -1306,8 +1247,8 @@ endif()
 #############################################################
 # Enable packaging
 if (WITH_CORE)
-  include(Bundle)
   include(VcpkgInstallDeps)
+  include(Bundle)
 endif()
 
 if (UNIX AND NOT APPLE)
