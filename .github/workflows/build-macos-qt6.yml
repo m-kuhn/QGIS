@@ -19,7 +19,7 @@ jobs:
       matrix:
         include:
           - os: macos-13
-            triplet: x64-osx
+            triplet: x64-osx-dynamic-release
             deployment-target: "10.15"
           - os: macos-14
             triplet: arm64-osx-dynamic-release
@@ -106,7 +106,3 @@ jobs:
       - name: 🌋 Build
         run: |
           cmake --build build --target bundle
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: always()
