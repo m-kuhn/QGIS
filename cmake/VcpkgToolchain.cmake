@@ -1,4 +1,4 @@
-set(NUGET_SOURCE "https://nuget.pkg.github.com/qgis/index.json" CACHE STRING "Nuget source")
+set(NUGET_SOURCE "https://nuget.pkg.github.com/m-kuhn/index.json" CACHE STRING "Nuget source")
 set(NUGET_USERNAME "qgis" CACHE STRING "Nuget user")
 
 # Setup features (dependencies) based on cmake configuration
