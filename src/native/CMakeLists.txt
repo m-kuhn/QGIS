@@ -13,7 +13,8 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
   find_package(${QT_VERSION_BASE} COMPONENTS DBus REQUIRED)
 endif()
 
-if(APPLE)
+# TODO: review
+if(FALSE)
   set(APPLE_LIB_LIST ApplicationServices CoreFoundation IOKit AppKit)
   foreach(_lib ${APPLE_LIB_LIST})
     string(TOUPPER ${_lib} _lib_var)
@@ -122,11 +123,7 @@ if(NOT ANDROID)
   )
 endif()
 
-if (BUILD_WITH_QT6)
-  target_link_libraries(qgis_native ${Qt6Core_LIBRARIES} ${Qt6Gui_LIBRARIES} "${NATIVE_LINK_LIBS}")
-else()
-  target_link_libraries(qgis_native ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} "${NATIVE_LINK_LIBS}")
-endif()
+target_link_libraries(qgis_native ${QT_VERSION_BASE}::Core ${QT_VERSION_BASE}::Gui "${NATIVE_LINK_LIBS}")
 
 if (UNIX AND NOT APPLE AND NOT ANDROID)
   target_link_libraries(qgis_native ${QT_VERSION_BASE}::DBus)

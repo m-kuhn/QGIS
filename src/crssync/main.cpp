@@ -22,6 +22,7 @@
 #include <QRegExp>
 #include <QSettings>
 #include <QTemporaryDir>
+#include <QProcessEnvironment>
 
 #include <iostream>
 #include <limits>

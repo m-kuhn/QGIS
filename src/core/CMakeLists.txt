@@ -2212,8 +2212,6 @@ if (NOT MSVC)
 endif()
 
 # install headers
-# install qgsconfig.h and plugin.h here so they can get into
-# the OS X framework target
 
 if (${QT_VERSION_BASE}Positioning_FOUND)
   set(QGIS_CORE_HDRS ${QGIS_CORE_HDRS}
@@ -2505,33 +2503,12 @@ if(HAVE_OPENCL)
 endif()
 
 
-if(NOT APPLE OR NOT QGIS_MACAPP_FRAMEWORK)
+if(NOT APPLE OR NOT QGIS_MAC_BUNDLE)
   install(FILES ${QGIS_CORE_HDRS} DESTINATION ${QGIS_INCLUDE_DIR})
 
   if(WITH_INTERNAL_NLOHMANN_JSON)
     install(FILES ${CMAKE_SOURCE_DIR}/external/nlohmann/json_fwd.hpp DESTINATION ${QGIS_INCLUDE_DIR}/nlohmann)
   endif()
-else()
-
-  set_target_properties(qgis_core PROPERTIES
-    CLEAN_DIRECT_OUTPUT 1
-    FRAMEWORK 1
-    FRAMEWORK_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}"
-    MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_SOURCE_DIR}/mac/framework.info.plist.in"
-    MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${COMPLETE_VERSION}
-    MACOSX_FRAMEWORK_IDENTIFIER org.qgis.qgis3_core
-    BUILD_WITH_INSTALL_RPATH TRUE
-    PUBLIC_HEADER "${QGIS_CORE_HDRS}"
-    LINK_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}"
-  )
-  # generated export header does not get copied with PUBLIC_HEADER files
-  add_custom_command(TARGET qgis_core
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy qgis_core.h
-            "${QGIS_OUTPUT_DIRECTORY}/${QGIS_LIB_SUBDIR}/qgis_core.framework/Headers"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS qgis_core.h
-  )
 endif()
 
 #generate unversioned libs for android
@@ -2552,6 +2529,7 @@ if (WIN32)
   target_link_libraries(qgis_core wsock32 ${SETUPAPI_LIBRARY} dbghelp ${VERSION_LIBRARY})
 endif()
 
+# TODO: can we remove this? Probably transitive
 if (APPLE)
   target_link_libraries(qgis_core ${LIBTASN1_LIBRARY})
 endif()
@@ -2699,16 +2677,15 @@ endif()
 
 # install
 
+ # get_target_property(FRAMEWORK_OUTPUT_DIRECTORY qgis_core LIBRARY_OUTPUT_DIRECTORY)
+# # message("Framework output directory: ${FRAMEWORK_OUTPUT_DIRECTORY}")
+# # get_target_property(FRAMEWORK_PATH qgis_core TARGET_FILE)
+# # message("Framework path: ${FRAMEWORK_PATH}")
+# # message(FATAL_ERROR BYE)
+
 install(TARGETS qgis_core
-  RUNTIME DESTINATION ${QGIS_BIN_DIR}
-  LIBRARY DESTINATION ${QGIS_LIB_DIR}
-  ARCHIVE DESTINATION ${QGIS_LIB_DIR}
-  FRAMEWORK DESTINATION ${QGIS_FW_SUBDIR}
-  PUBLIC_HEADER DESTINATION ${QGIS_INCLUDE_DIR})
-
-# Mac dev frameworks
-
-if (APPLE AND QGIS_MACAPP_INSTALL_DEV)
-  install(TARGETS qgis_core FRAMEWORK DESTINATION ${QGIS_MACAPP_DEV_PREFIX})
-  install(CODE "execute_process(COMMAND install_name_tool -id \"${QGIS_MACAPP_DEV_PREFIX}/qgis_core.framework/Versions/${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}/qgis_core\" \"$ENV{DESTDIR}${QGIS_MACAPP_DEV_PREFIX}/qgis_core.framework/qgis_core\")")
-endif()
+  RUNTIME DESTINATION "${QGIS_BIN_DIR}"
+  LIBRARY DESTINATION "${QGIS_LIB_DIR}"
+  ARCHIVE DESTINATION "${QGIS_LIB_DIR}"
+  PUBLIC_HEADER DESTINATION "${QGIS_INCLUDE_DIR}"
+)

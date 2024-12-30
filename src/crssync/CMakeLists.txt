@@ -23,7 +23,7 @@ else ()
   else()
     add_custom_target(synccrsdb
       COMMENT "Running crssync"
-      COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/crssync
+      COMMAND ${CMAKE_COMMAND} -E env "QGIS_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/crssync"
       DEPENDS crssync
     )
   endif()
