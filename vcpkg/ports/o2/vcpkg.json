@@ -1,5 +1,4 @@
-{
-  "name": "o2",
+{  "name": "o2",
   "version": "1",
   "description": "OAuth 2.0 for Qt",
   "homepage": "https://github.com/qgis/o2",

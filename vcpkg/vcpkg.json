@@ -1,6 +1,5 @@
 {
-  "vcpkg-configuration": {
-    "default-registry": {
+  "vcpkg-configuration": {  "default-registry": {
       "kind": "git",
       "baseline": "80d54ff62d528339c626a6fbc3489a7f25956ade",
       "repository": "https://github.com/microsoft/vcpkg"
@@ -11,9 +10,9 @@
         "baseline": "a4bdac4fe806307844ddc5c663620ea919ffdf4c",
         "repository": "https://github.com/open-vcpkg/python-registry",
         "packages": [
+          "gdal",
           "python3",
           "py-*",
-          "gdal",
           "swig",
           "vcpkg-python-scripts",
           "vcpkg-tool-mercurial",

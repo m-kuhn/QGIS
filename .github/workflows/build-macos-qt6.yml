@@ -106,3 +106,7 @@ jobs:
       - name: 🌋 Build
         run: |
           cmake --build build --target bundle
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: always()
