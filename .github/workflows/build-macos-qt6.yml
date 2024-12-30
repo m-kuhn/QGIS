@@ -1,9 +1,9 @@
 ---
 name: 🍎 Build - MacOS Qt6
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - mac_dmg
   # pull_request:
   # release:
   #   types: ['published']
@@ -18,9 +18,9 @@ jobs:
     strategy:
       matrix:
         include:
-#          - os: macos-13
-#            triplet: x64-osx
-#            deployment-target: "10.15"
+          - os: macos-13
+            triplet: x64-osx
+            deployment-target: "10.15"
           - os: macos-14
             triplet: arm64-osx-dynamic-release
             deployment-target: "11.0"
@@ -105,4 +105,4 @@ jobs:
 
       - name: 🌋 Build
         run: |
-          cmake --build build
+          cmake --build build --target bundle
