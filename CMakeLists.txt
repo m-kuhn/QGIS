@@ -954,7 +954,7 @@ if (WITH_CORE)
 
     if (APPLE AND QGIS_MAC_BUNDLE)
       set(CMAKE_MACOSX_RPATH ON) # If this is off, the path will be stripped (completely) at install time, we want to preserve the `@rpath` prefix
-      set(CMAKE_SKIP_RPATH TRUE)
+      set(CMAKE_SKIP_INSTALL_RPATH TRUE)
 
       set(APP_BUNDLE_DIR "${QGIS_APP_NAME}.app")
       set(APP_CONTENTS_DIR "${APP_BUNDLE_DIR}/Contents")
