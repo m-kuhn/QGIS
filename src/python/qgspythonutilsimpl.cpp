@@ -204,7 +204,6 @@ _ssr = StartupScriptRunner()
 
 void QgsPythonUtilsImpl::init()
 {
-#if defined( PY_MAJOR_VERSION ) && defined( PY_MINOR_VERSION ) && ( ( PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 8 ) || PY_MAJOR_VERSION > 3 )
   PyStatus status;
   PyPreConfig preconfig;
   PyPreConfig_InitPythonConfig( &preconfig );
