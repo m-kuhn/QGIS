@@ -3,7 +3,7 @@ name: 🪟 Windows Qt6
 on:
   push:
     branches:
-      - master
+      - vcpkg-actions
       - release-**
   pull_request:
   release:
@@ -36,7 +36,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: 🎡 Setup vcpkg
-        uses: ./.github/actions/setup-vcpkg
+        uses: m-kuhn/action-setup-vcpkg@main
 
       - name: 🦬 Setup flex/bison
         uses: robinraju/release-downloader@v1.11
