@@ -49,10 +49,11 @@ else()
 endif()
 
 if(WITH_VCPKG)
+  set(TARGET_SYSROOT "${VCPKG_INSTALL_PREFIX}/${VCPKG_TARGET_TRIPLET}")
   if(WIN32)
-    list(APPEND CMAKE_PROGRAM_PATH "${VCPKG_INSTALL_PREFIX}/${VCPKG_TARGET_TRIPLET}/tools/python3/Scripts/")
+    list(APPEND CMAKE_PROGRAM_PATH "${TARGET_SYSROOT}/tools/python3/Scripts/")
   else()
-    list(APPEND CMAKE_PROGRAM_PATH "${VCPKG_INSTALL_PREFIX}/${VCPKG_TARGET_TRIPLET}/bin")
+    list(APPEND CMAKE_PROGRAM_PATH "${TARGET_SYSROOT}/bin")
   endif()
   set(PREFER_INTERNAL_LIBS FALSE)
 else()
@@ -912,6 +913,27 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
   include("cmake/modules/linker.cmake")
 endif()
 
+set(MIN_PYTHON_VERSION "3.9")
+set(Python_FIND_FRAMEWORK "LAST")
+
+if (WITH_BINDINGS)
+  find_package(Python ${MIN_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
+else()
+  find_package(Python ${MIN_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter)
+endif()
+
+# Fix python site-packages for Fedora
+# See https://github.com/qgis/QGIS/issues/54348#issuecomment-1694216152
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  if(EXISTS "/etc/fedora-release")
+    EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} -c "import sysconfig;print(sysconfig.get_path(\"platlib\", \"rpm_prefix\"), end=\"\")" OUTPUT_VARIABLE Python_SITEARCH)
+  endif()
+endif()
+
+message("-- Found Python executable: ${Python_EXECUTABLE} (version ${Python_VERSION})")
+message("-- Python library: ${Python_LIBRARIES}")
+message("-- Python site-packages: ${Python_SITEARCH}")
+
 #############################################################
 # platform specific stuff
 if (WITH_CORE)
@@ -963,13 +985,16 @@ if (WITH_CORE)
       set(APP_RESOURCES_DIR "${APP_CONTENTS_DIR}/Resources")
       set(APP_PLUGINS_DIR "${APP_CONTENTS_DIR}/PlugIns")
 
+      cmake_path(RELATIVE_PATH Python_SITEARCH BASE_DIRECTORY "${TARGET_SYSROOT}" OUTPUT_VARIABLE _RELATIVE_SITEARCH)
+
       set(DEFAULT_BIN_SUBDIR      ${APP_MACOS_DIR})
       set(DEFAULT_LIB_SUBDIR      ${APP_FRAMEWORKS_DIR})
       set(DEFAULT_DATA_SUBDIR     ${APP_RESOURCES_DIR}/qgis)
       set(DEFAULT_LIBEXEC_SUBDIR  ${APP_MACOS_DIR})
       set(DEFAULT_PLUGIN_SUBDIR   ${APP_PLUGINS_DIR}/qgis)
-      set(DEFAULT_INCLUDE_SUBDIR  include/qgis) # TODO: disable?
+      set(DEFAULT_INCLUDE_SUBDIR  /dev/null)
       set(DEFAULT_QML_SUBDIR      ${APP_RESOURCES_DIR}/qgis/qml)
+      set(DEFAULT_PYTHON_SUBDIR   ${APP_FRAMEWORKS_DIR}/${_RELATIVE_SITEARCH})
     else()
       # UNIX
       set (DEFAULT_BIN_SUBDIR     bin)
@@ -1095,28 +1120,6 @@ option(ENABLE_UNITY_BUILDS "Enable Unity builds, that is compiling several .cpp 
 #############################################################
 # Python
 
-set(MIN_PYTHON_VERSION "3.9")
-set(Python_FIND_FRAMEWORK "LAST")
-
-
-if (WITH_BINDINGS)
-  find_package(Python ${MIN_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development)
-else()
-  find_package(Python ${MIN_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter)
-endif()
-
-# Fix python site-packages for Fedora
-# See https://github.com/qgis/QGIS/issues/54348#issuecomment-1694216152
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  if(EXISTS "/etc/fedora-release")
-    EXECUTE_PROCESS(COMMAND ${Python_EXECUTABLE} -c "import sysconfig;print(sysconfig.get_path(\"platlib\", \"rpm_prefix\"), end=\"\")" OUTPUT_VARIABLE Python_SITEARCH)
-  endif()
-endif()
-
-message("-- Found Python executable: ${Python_EXECUTABLE} (version ${Python_VERSION})")
-message("-- Python library: ${Python_LIBRARIES}")
-message("-- Python site-packages: ${Python_SITEARCH}")
-
 if (WITH_CORE AND WITH_BINDINGS)
   set(PYTHON_OUTPUT_DIRECTORY ${QGIS_OUTPUT_DIRECTORY}/python)
   set (QGIS_PYTHON_OUTPUT_DIRECTORY ${PYTHON_OUTPUT_DIRECTORY}/qgis)
@@ -1149,8 +1152,12 @@ if (WITH_CORE AND WITH_BINDINGS)
   set(SIP_INCLUDES ${PYQT_SIP_DIR} ${CMAKE_SOURCE_DIR}/python)
   set(SIP_CONCAT_PARTS 25)
 
-  if (NOT BINDINGS_GLOBAL_INSTALL)
-    set(Python_SITEARCH ${QGIS_DATA_DIR}/python)
+  if(BINDINGS_GLOBAL_INSTALL)
+    set(QGIS_PYTHON_INSTALL_DIR ${Python_SITEARCH})
+  elseif(DEFINED DEFAULT_PYTHON_SUBDIR)
+    set(QGIS_PYTHON_INSTALL_DIR ${DEFAULT_PYTHON_SUBDIR})
+  else()
+    set(QGIS_PYTHON_INSTALL_DIR ${QGIS_DATA_DIR}/python)
   endif()
 
   if (WITH_CUSTOM_WIDGETS)

@@ -25,9 +25,19 @@ endif()
 install(DIRECTORY "${PROJ_DATA_PATH}/" DESTINATION "${QGIS_DATA_SUBDIR}/proj")
 install(DIRECTORY "${VCPKG_BASE_DIR}/share/gdal/" DESTINATION "${QGIS_DATA_SUBDIR}/gdal")
 install(DIRECTORY "${VCPKG_BASE_DIR}/bin/Qca/" DESTINATION "${QGIS_LIB_SUBDIR}/Qca") # QCA plugins
-install(DIRECTORY "${VCPKG_BASE_DIR}/Qt6/" DESTINATION "${QGIS_LIB_SUBDIR}/Qt6") # qt plugins (qml and others)
+if(MSVC)
+  install(DIRECTORY "${VCPKG_BASE_DIR}/Qt6/" DESTINATION "${QGIS_LIB_SUBDIR}/Qt6") # qt plugins (qml and others)
+else()
+  install(DIRECTORY "${VCPKG_BASE_DIR}/Qt6/" DESTINATION "${APP_PLUGINS_DIR}/") # qt plugins (qml and others)
+endif()
 if(WITH_BINDINGS)
-  install(DIRECTORY "${VCPKG_BASE_DIR}/tools/python3/"
-    DESTINATION "${QGIS_LIB_SUBDIR}"
-    PATTERN "*.sip" EXCLUDE)
+  # TODO: validate on windows
+  if(MSVC)
+  elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    cmake_path(GET Python_SITEARCH PARENT_PATH _PYTHON_DIR)
+    
+    install(DIRECTORY "${_PYTHON_DIR}"
+      DESTINATION "${APP_FRAMEWORKS_DIR}/lib"
+      PATTERN "*.sip" EXCLUDE)
+  endif()
 endif()

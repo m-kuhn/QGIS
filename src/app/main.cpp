@@ -1374,15 +1374,6 @@ int main( int argc, char *argv[] )
       }
     }
   }
-
-  // Point PYTHONHOME to embedded interpreter if present in the bundle
-  if ( !getenv( "PYTHONHOME" ) )
-  {
-    if ( QFile::exists( QCoreApplication::applicationDirPath().append( "/bin/python3" ) ) )
-    {
-      setenv( "PYTHONHOME", QCoreApplication::applicationDirPath().toUtf8().constData(), 1 );
-    }
-  }
 #endif
 
   // custom environment variables
