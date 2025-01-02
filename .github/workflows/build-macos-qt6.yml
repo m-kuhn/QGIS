@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release-*
+      - mac_vcpkg_dmg
   pull_request:
   release:
     types: ['published']
