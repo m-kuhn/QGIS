@@ -99,6 +99,13 @@ jobs:
 
                 cmake -D VCPKG_INSTALL_OPTIONS="" build
 
+      - name: Debug Install
+        run: |
+          cat build/src/app/cmake_install.cmake
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: 📑 Upload vcpkg build logs
         uses: actions/upload-artifact@v4
         if: failure()
