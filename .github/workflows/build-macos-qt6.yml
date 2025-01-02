@@ -92,10 +92,12 @@ jobs:
                 -D NUGET_USERNAME=${{ github.actor }} \
                 -D NUGET_TOKEN=${{ secrets.GITHUB_TOKEN }} || true
 
-                fdupes -q -r -1 build/vcpkg_installed/${{ matrix.triplet }}/lib | grep libQt | while read line; do master=""; for file in ${line[*]}; do if  [[ "x${master}" == "x" ]]; then master=$file; else rm "${file}"; ln -s $(basename "${master}") "${file}"; fi; done; done
+#                fdupes -q -r -1 build/vcpkg_installed/${{ matrix.triplet }}/lib | grep libQt | while read line; do master=""; for file in ${line[*]}; do if  [[ "x${master}" == "x" ]]; then master=$file; else rm "${file}"; ln -s $(basename "${master}") "${file}"; fi; done; done
 
-                cmake -D VCPKG_INSTALL_OPTIONS="" build
+#                cmake -D VCPKG_INSTALL_OPTIONS="" build
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: 📑 Upload vcpkg build logs
         uses: actions/upload-artifact@v4
         if: failure()
