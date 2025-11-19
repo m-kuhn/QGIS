@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - qt5-qgis-3-44
+      - translatordebug
   pull_request:
   release:
     types: ['published']
@@ -96,6 +97,7 @@ jobs:
           cmake -S . \
                 -G Ninja \
                 -B build \
+                -D CMAKE_BUILD_TYPE=RelWithDebInfo \
                 -D QGIS_APP_NAME="QGIS-${{steps.workflow-artifact-ids.outputs.display-name}}" \
                 -D WITH_VCPKG=ON \
                 -D WITH_QTWEBENGINE=OFF \

@@ -522,6 +522,8 @@ void QgsApplication::installTranslators()
 
   }
 
+  QgsDebugMsgLevel( QStringLiteral( "Translation %1" ).arg(  *sTranslation() ), 2 );
+
   if ( *sTranslation() != QLatin1String( "C" ) )
   {
     mQgisTranslator = std::make_unique<QTranslator>( this );
