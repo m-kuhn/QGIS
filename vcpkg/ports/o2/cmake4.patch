@@ -1,0 +1,12 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 7f144bc..5377051 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -198,7 +198,6 @@ if(o2_WITH_KEYCHAIN)
+ endif(o2_WITH_KEYCHAIN)
+ 
+ if(BUILD_SHARED_LIBS AND APPLE AND POLICY CMP0042) # in CMake >= 2.8.12
+-    cmake_policy(SET CMP0042 OLD)
+     set(CMAKE_MACOSX_RPATH OFF) # don't embed @rpath in install name
+ endif(BUILD_SHARED_LIBS AND APPLE AND POLICY CMP0042)
+ 

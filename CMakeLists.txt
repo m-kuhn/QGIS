@@ -95,11 +95,6 @@ if (USE_OPENCL)
     find_package(OpenCL)
     if(${OpenCL_FOUND})
         set(HAVE_OPENCL TRUE)
-        # Fixup for standard FindOpenCL module not assigning proper framework headers directory
-        if (APPLE AND "${OpenCL_INCLUDE_DIR}" MATCHES "OpenCL\\.framework/?$")
-            set(OpenCL_INCLUDE_DIR "${OpenCL_INCLUDE_DIR}/Headers" CACHE PATH "" FORCE)
-            set(OpenCL_INCLUDE_DIRS ${OpenCL_INCLUDE_DIR})
-        endif()
         find_package(OpenCLhpp)
         if(NOT OPENCL_HPP_FOUND)
             # Use internal headers copied from OpenCL-CLHPP project
@@ -1337,3 +1332,45 @@ endif()
 if (UNIX AND NOT APPLE)
   add_subdirectory(linux)
 endif()
+
+set(QGIS_EXPORT_TARGETS "")
+
+if (WITH_CORE)
+    list(APPEND QGIS_EXPORT_TARGETS qgis_core)
+endif()
+
+install(
+    TARGETS ${QGIS_EXPORT_TARGETS}
+    EXPORT QGISTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include/qgis
+)
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+    cmake/QGISConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/QGISConfig.cmake
+    INSTALL_DESTINATION lib/cmake/QGIS
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/QGISConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(
+    EXPORT QGISTargets
+    NAMESPACE QGIS::
+    FILE QGISTargets.cmake
+    DESTINATION lib/cmake/QGIS
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/QGISConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/QGISConfigVersion.cmake
+    DESTINATION lib/cmake/QGIS
+)

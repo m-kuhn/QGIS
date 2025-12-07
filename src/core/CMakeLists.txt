@@ -2479,6 +2479,8 @@ set(IMAGE_RCCS ../../images/images.qrc)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(qgis_core ${LIBRARY_TYPE} ${QGIS_CORE_SRCS} ${QGIS_CORE_HDRS} ${QGIS_CORE_PRIVATE_HDRS} ${IMAGE_RCCS})
+add_library(QGIS::Core ALIAS qgis_core)
+
 if(QGISPOSTFIX)
   set_target_properties(qgis_core PROPERTIES
     RUNTIME_OUTPUT_NAME qgis_core${QGISPOSTFIX}
@@ -2523,98 +2525,91 @@ if (MSVC)
   target_compile_definitions(qgis_core PUBLIC _HAS_AUTO_PTR_ETC=1)
 endif()
 
-target_include_directories(qgis_core SYSTEM PUBLIC
-  ${LIBZIP_INCLUDE_DIRS}
-  ${SPATIALINDEX_INCLUDE_DIR} # before GEOS for case-insensitive filesystems
-  ${QCA_INCLUDE_DIR}
-  ${Protobuf_INCLUDE_DIRS}
-  ${ZLIB_INCLUDE_DIRS}
-)
-
 target_include_directories(qgis_core PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  3d
-  actions
-  annotations
-  auth
-  browser
-  callouts
-  classification
-  diagram
-  dxf
-  editform
-  effects
-  elevation
-  expression
-  externalstorage
-  fieldformatter
-  geometry
-  geocoding
-  gps
-  labeling
-  labeling/rules
-  layertree
-  layout
-  locator
-  maprenderer
-  mesh
-  metadata
-  network
-  numericformats
-  painting
-  pal
-  pdf
-  plot
-  pointcloud
-  pointcloud/expression
-  processing
-  processing/models
-  proj
-  project
-  providers
-  providers/arcgis
-  providers/memory
-  providers/gdal
-  providers/ogr
-  providers/meshmemory
-  providers/sensorthings
-  raster
-  renderer
-  scalebar
-  settings
-  sensor
-  stac
-  symbology
-  textrenderer
-  tiledscene
-  validity
-  vector
-  vectortile
-  web
-  ${CMAKE_SOURCE_DIR}/external/delaunator-cpp
-  ${CMAKE_SOURCE_DIR}/external/kdbush/include
-  ${CMAKE_SOURCE_DIR}/external/nanoarrow/include
-  ${CMAKE_SOURCE_DIR}/external/nmea
-  ${CMAKE_SOURCE_DIR}/external/rtree/include
-  ${CMAKE_SOURCE_DIR}/external/tinygltf
+  $<INSTALL_INTERFACE:include/qgis>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3d>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/actions>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/annotations>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/auth>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/browser>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/callouts>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/classification>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/diagram>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/dxf>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/editform>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/effects>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/elevation>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/expression>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/externalstorage>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fieldformatter>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/geometry>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/geocoding>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gps>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/labeling>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/labeling/rules>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/layertree>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/layout>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/locator>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/maprenderer>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mesh>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/metadata>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/network>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/numericformats>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/painting>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pal>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pdf>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plot>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pointcloud>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/pointcloud/expression>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/processing>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/processing/models>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/proj>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/project>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/arcgis>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/memory>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/gdal>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/ogr>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/meshmemory>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/sensorthings>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/raster>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/renderer>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/scalebar>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/settings>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sensor>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/stac>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/symbology>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/textrenderer>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tiledscene>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/validity>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vector>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vectortile>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/web>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/delaunator-cpp>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/kdbush/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/nanoarrow/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/nmea>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/rtree/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/tinygltf>
 )
 
 if (WITH_PDF4QT)
   target_include_directories(qgis_core PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/PDF4QT/Pdf4QtLibCore/sources)
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/PDF4QT/Pdf4QtLibCore/sources>)
     target_link_libraries(qgis_core Pdf4QtLibCore)
 endif()
 
 if (WITH_EPT)
   target_include_directories(qgis_core PUBLIC
-    ${CMAKE_SOURCE_DIR}/src/core/providers/ept)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/ept>)
 endif()
 
 if (WITH_COPC)
   target_include_directories(qgis_core PUBLIC
-    ${CMAKE_SOURCE_DIR}/src/core/providers/copc
-    ${CMAKE_SOURCE_DIR}/src/core/providers/vpc)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/copc>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/providers/vpc>)
 endif()
 
 GENERATE_EXPORT_HEADER(
@@ -2634,8 +2629,7 @@ if (NOT WITH_INTERNAL_POLY2TRI)
 endif()
 
 if(HAVE_OPENCL)
-  target_link_libraries(qgis_core ${OpenCL_LIBRARY})
-  target_include_directories(qgis_core PUBLIC ${OpenCL_INCLUDE_DIRS})
+  target_link_libraries(qgis_core OpenCL::OpenCL)
 endif()
 
 if(WITH_INTERNAL_NLOHMANN_JSON)
@@ -2823,3 +2817,55 @@ install(TARGETS qgis_core
   RUNTIME DESTINATION ${QGIS_BIN_DIR}
   LIBRARY DESTINATION ${QGIS_LIB_DIR}
   ARCHIVE DESTINATION ${QGIS_LIB_DIR})
+
+# Debug helper to print interface include dirs for a target and its linked deps
+function(print_interface_info TARGET)
+    message(STATUS "=== Interface info for target: ${TARGET} ===")
+
+    # Print this target's own interface include dirs
+    get_target_property(_incs ${TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+    if(_incs)
+        message(STATUS "INTERFACE_INCLUDE_DIRECTORIES of ${TARGET}:")
+        foreach(dir IN LISTS _incs)
+            message(STATUS "  - ${dir}")
+        endforeach()
+    else()
+        message(STATUS "No INTERFACE_INCLUDE_DIRECTORIES on ${TARGET}")
+    endif()
+
+    # Print linked libraries
+    get_target_property(_libs ${TARGET} INTERFACE_LINK_LIBRARIES)
+    if(NOT _libs)
+        # PUBLIC libs might be under LINK_LIBRARIES if static/internal
+        get_target_property(_libs ${TARGET} LINK_LIBRARIES)
+    endif()
+
+    if(_libs)
+        message(STATUS "INTERFACE_LINK_LIBRARIES of ${TARGET}:")
+        foreach(lib IN LISTS _libs)
+            message(STATUS "  * ${lib}")
+
+            if(TARGET ${lib})
+                # Check include dirs of the dependency
+                get_target_property(_libincs ${lib} INTERFACE_INCLUDE_DIRECTORIES)
+                if(_libincs)
+                    message(STATUS "    INTERFACE_INCLUDE_DIRECTORIES of ${lib}:")
+                    foreach(d IN LISTS _libincs)
+                        message(STATUS "      - ${d}")
+                    endforeach()
+                else()
+                    message(STATUS "    (no INTERFACE_INCLUDE_DIRECTORIES)")
+                endif()
+            else()
+                message(STATUS "    (not a CMake target)")
+            endif()
+        endforeach()
+    else()
+        message(STATUS "No linked INTERFACE libraries on ${TARGET}")
+    endif()
+
+    message(STATUS "==============================================")
+endfunction()
+
+# Call it for qgis_core (or any other target)
+print_interface_info(qgis_core)
