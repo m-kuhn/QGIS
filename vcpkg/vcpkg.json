@@ -61,7 +61,10 @@
       "default-features": false,
       "features": [
         "opengl",
-        "gles3",
+        {
+          "name": "gles3",
+          "platform": "emscripten"
+        },
         "concurrent",
         "freetype",
         "gui",
