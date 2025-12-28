@@ -185,6 +185,7 @@
             "sql-odbc"
           ]
         },
+        "opencl",
         "qtdeclarative",
         "qtimageformats",
         "qtquickcontrols2",
