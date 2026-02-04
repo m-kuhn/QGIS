@@ -96,6 +96,7 @@
       ]
     },
     "qt5-base",
+    "qt5-charts",
     "qt5-location",
     {
       "name": "qt5-macextras",
