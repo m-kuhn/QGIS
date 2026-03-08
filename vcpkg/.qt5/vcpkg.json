@@ -171,6 +171,7 @@
         "py-networkx",
         "py-numpy",
         "py-owslib",
+        "py-pillow",
         "py-pip",
         "py-psycopg",
         "py-psycopg2",
