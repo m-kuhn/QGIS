@@ -95,7 +95,12 @@
         "ossl"
       ]
     },
-    "qt5-base",
+    {
+      "name": "qt5-base",
+      "features": [
+        "postgresqlplugin"
+      ]
+    },
     "qt5-location",
     {
       "name": "qt5-macextras",
