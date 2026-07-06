@@ -1,0 +1,31 @@
+diff --git a/c/driver/postgresql/error.h b/c/driver/postgresql/error.h
+index bf8a4b2e4..6c5a606e5 100644
+--- a/c/driver/postgresql/error.h
++++ b/c/driver/postgresql/error.h
+@@ -25,7 +25,7 @@
+ #include <arrow-adbc/adbc.h>
+ #include <libpq-fe.h>
+ 
+-#include <fmt/core.h>
++#include <fmt/format.h>
+ 
+ #include "driver/framework/status.h"
+ 
+@@ -73,7 +73,7 @@ AdbcStatusCode SetError(struct AdbcError* error, PGresult* result, const char* f
+ 
+ template <typename... Args>
+ Status MakeStatus(PGresult* result, const char* format_string, Args&&... args) {
+-  auto message = ::fmt::vformat(format_string, ::fmt::make_format_args(args...));
++  auto message = ::fmt::format(format_string, std::forward<Args>(args)...);
+ 
+   AdbcStatusCode code = ADBC_STATUS_IO;
+   char sqlstate_out[5];
+@@ -109,7 +109,7 @@ Status MakeStatus(PGresult* result, const char* format_string, Args&&... args) {
+     }
+   }
+ 
+-  return status;
++  return std::move(status);
+ }
+ 
+ }  // namespace adbcpq
