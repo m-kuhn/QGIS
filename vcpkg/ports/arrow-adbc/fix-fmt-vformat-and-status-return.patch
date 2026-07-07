@@ -1,5 +1,18 @@
+diff --git a/c/driver/framework/status.h b/c/driver/framework/status.h
+index 69893ae44..32a11df7a 100644
+--- a/c/driver/framework/status.h
++++ b/c/driver/framework/status.h
+@@ -27,7 +27,7 @@
+ #include <vector>
+ 
+ #if defined(ADBC_FRAMEWORK_USE_FMT)
+-#include <fmt/core.h>
++#include <fmt/format.h>
+ #endif
+ 
+ #include <arrow-adbc/adbc.h>
 diff --git a/c/driver/postgresql/error.h b/c/driver/postgresql/error.h
-index bf8a4b2e4..6c5a606e5 100644
+index bf8a4b2e4..3b012f1a9 100644
 --- a/c/driver/postgresql/error.h
 +++ b/c/driver/postgresql/error.h
 @@ -25,7 +25,7 @@
@@ -20,12 +33,3 @@ index bf8a4b2e4..6c5a606e5 100644
  
    AdbcStatusCode code = ADBC_STATUS_IO;
    char sqlstate_out[5];
-@@ -109,7 +109,7 @@ Status MakeStatus(PGresult* result, const char* format_string, Args&&... args) {
-     }
-   }
- 
--  return status;
-+  return std::move(status);
- }
- 
- }  // namespace adbcpq
