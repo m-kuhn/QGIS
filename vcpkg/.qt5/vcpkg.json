@@ -21,7 +21,7 @@
       },
       {
         "kind": "git",
-        "baseline": "80e747ded7f31bfa3da33793eefb4b052493f80b",
+        "baseline": "39b3b9007ac463a36375859943b0771737c5803b",
         "repository": "https://github.com/open-vcpkg/python-registry",
         "packages": [
           "arrow",
@@ -87,6 +87,10 @@
     "proj",
     "protobuf",
     "py-psycopg2",
+    {
+      "name": "py-sip",
+      "version>=": "6.16.1"
+    },
     "python3",
     {
       "name": "qca-qt5",
