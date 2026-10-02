@@ -1,0 +1,23 @@
+diff --git a/python/CMakeLists.txt b/python/CMakeLists.txt
+index 3024945..8d5835b 100644
+--- a/python/CMakeLists.txt
++++ b/python/CMakeLists.txt
+@@ -298,8 +298,16 @@ find_package(Arrow REQUIRED)
+ if(APPLE
+    AND NOT PYARROW_BUNDLE_ARROW_CPP
+    AND ARROW_SHARED_LIB)
+-  get_filename_component(_arrow_lib_dir "${ARROW_SHARED_LIB}" DIRECTORY)
+-  list(APPEND CMAKE_INSTALL_RPATH "${_arrow_lib_dir}")
++  if(PYARROW_INSTALL_RPATH)
++    # vcpkg stages the install tree and then moves it, so the location of
++    # libarrow is only stable relative to the extension modules. Let the
++    # caller supply that relative RPATH instead of baking in the absolute
++    # directory the libraries happen to sit in at build time.
++    list(APPEND CMAKE_INSTALL_RPATH "${PYARROW_INSTALL_RPATH}")
++  else()
++    get_filename_component(_arrow_lib_dir "${ARROW_SHARED_LIB}" DIRECTORY)
++    list(APPEND CMAKE_INSTALL_RPATH "${_arrow_lib_dir}")
++  endif()
+ endif()
+ 
+ macro(define_option name description arrow_option)
