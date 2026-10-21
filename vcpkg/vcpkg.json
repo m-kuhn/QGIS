@@ -52,6 +52,12 @@
     "geos",
     "gsl",
     "jhasse-poly2tri",
+    {
+      "name": "libjpeg-turbo",
+      "features": [
+        "jpeg8"
+      ]
+    },
     "libpq",
     "libspatialindex",
     "libspatialite",
