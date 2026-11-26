@@ -21,7 +21,7 @@
       },
       {
         "kind": "git",
-        "baseline": "af49463f5aaa5463efd397316611a79c0db6d1de",
+        "baseline": "43962ee7df9ccd4dc8a3cc4ec936a4a4f1925404",
         "repository": "https://github.com/open-vcpkg/python-registry",
         "packages": [
           "arrow",
